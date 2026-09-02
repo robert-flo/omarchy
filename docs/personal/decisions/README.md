@@ -1,19 +1,32 @@
-# docs/personal/decisions — Registro de decisiones (ADRs)
+# docs/personal/decisions — Architecture decision records (ADRs)
 
-Decisiones de arquitectura/operación del fork, promovidas desde la bitácora pasada del scratchpad.
-Formato aligerado: Contexto → Decisión → Consecuencias. Cada ADR tiene estado: **Aceptada**,
-**Reemplazada**, **Deprecated**. Para cambiar una vigente, escribir un nuevo ADR que la reemplace
-(nunca editar el histórico).
+Architecture/operations decisions for the fork, promoted from the previous notes log. Lightweight
+format: Context → Decision → Consequences. Each ADR has a status: **Accepted**, **Superseded**,
+**Deprecated**. To change an accepted one, write a new ADR that supersedes it (never edit history).
 
-## Índice
+## Index
 
-| ADR | Estado |
+| ADR | Status |
 |---|---|
-| [ADR-001 — Hosting: GitHub Pages + GitHub Actions como build host](ADR-001-hosting-github-pages.md) | Aceptada |
-| [ADR-002 — Solo canal stable](ADR-002-canal-estable-solo.md) | Aceptada |
-| [ADR-003 — Sombreado parcial: `[omarchy-personal]` antes de `[omarchy]`](ADR-003-sombreado-parcial.md) | Aceptada |
-| [ADR-004 — Regla `pkgrel` base alta + incremento por republicación](ADR-004-regla-pkgrel.md) | Aceptada (autoderivado L8) |
-| [ADR-005 — Publicar todos los `personal: true`](ADR-005-marcador-personal.md) | Aceptada |
-| [ADR-006 — Claves GPG y deploy key: confianza, rotación y DR](ADR-006-claves-gpg.md) | Aceptada |
-| [ADR-007 — Entorno de build rolling vs pin a digest](ADR-007-entorno-build.md) | Aceptada (riesgo declarado) |
-| [ADR-008 — Todo viaja vía `omarchy update` (arquitectura 13ª parte)](ADR-008-arquitectura.md) | Aceptada |
+| [ADR-001 — Hosting: GitHub Pages + GitHub Actions as build host](ADR-001-hosting-github-pages.md) | Accepted |
+| [ADR-002 — Stable channel only](ADR-002-stable-channel.md) | Accepted |
+| [ADR-003 — Partial shadow: `[omarchy-personal]` before `[omarchy]`](ADR-003-partial-shadow.md) | Accepted |
+| [ADR-004 — `pkgrel`: high base + increment per release](ADR-004-pkgrel-rule.md) | Accepted (auto-derived) |
+| [ADR-005 — Publish every `personal: true`](ADR-005-personal-marker.md) | Accepted |
+| [ADR-006 — GPG keys and deploy key: trust, rotation, DR](ADR-006-keys.md) | Accepted |
+| [ADR-007 — Rolling build environment, not a digest pin](ADR-007-build-environment.md) | Accepted (declared risk) |
+| [ADR-008 — Everything travels via `omarchy update`](ADR-008-architecture.md) | Accepted |
+
+## Known limitations and non-goals (read this first)
+
+This is an active proof of concept (pre-1.0) maintained by a single person. The borders of what is
+solved are stated explicitly rather than hidden:
+
+- **Build reproducibility is best-effort, not strict.** The Action builds inside `archlinux:base-devel`
+  (rolling). See ADR-007 for the accepted trade-off and the trigger to revisit.
+- **Single maintainer + single signing key.** Recovery depends on the maintainer; the key exists
+  only as a CI secret. See ADR-006 and `../runbook.md` (F6).
+- **Sync/merge CI is human-triggered** for publication; only the cadence watcher (`sync-check.yml`)
+  is automated. See `../cadence.md`.
+- **Only the stable channel is published** (no edge/rc personal). See ADR-002.
+- These are decisions, not gaps: each has a record above. Any change to them is a new ADR.

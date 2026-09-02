@@ -2,128 +2,151 @@
 name: personal-fork
 description: >
   REQUIRED for ANY work on the robert-flo/omarchy personal fork (branch `personal`).
-  Use when adding or changing configs, webapps, omarchy-* commands, third-party wrappers,
+  Use when adding or changing configs, web apps, omarchy-* commands, third-party wrappers,
   package sets, migrations, or provisioning in this fork; or when publishing to the personal
   pacman repo, onboarding a new machine, or syncing with upstream. Triggers: "add/change this
   config/app/command/wrapper", "publish the release", "install a new machine", "sync with upstream",
   "the fork needs an update". Use the Decision Matrix to decide WHERE every change goes.
-  Do NOT use for end-user customization of an installed system (that is default/agents/skills/omarchy)
-  or for generic upstream source development (that is agents/skills/* and AGENTS.md).
+  Do NOT use for end-user customization of an installed system (that is
+  default/agents/skills/omarchy/SKILL.md) or for generic upstream source development (that is
+  agents/skills/* and AGENTS.md).
 ---
 
 # Personal Fork Skill
 
-Este skill enseña a **operar en el fork personal de Omarchy** (`robert-flo/omarchy`, rama `personal`):
-dónde va cada cambio, cómo validarlo en la máquina dev y cómo llevarlo a todas las máquinas vía
-`omarchy update`, siguiendo el patrón upstream con miras a contribuir de vuelta.
+This skill teaches how to **operate Omarchy's personal fork** (`robert-flo/omarchy`, branch
+`personal`): where each change goes, how to validate it on the dev machine, and how to deliver it to
+all machines via `omarchy update`, following the upstream pattern with a view to contributing back.
 
-**Documento operativo de referencia:** [`AGENTS.personal.md`](../../../AGENTS.personal.md) (índice)
-y [`docs/personal/`](../../../docs/personal/) (recetas detalladas).
+**Reference index:** [`AGENTS.personal.md`](../../../AGENTS.personal.md) (overview + hard rules) and
+[`docs/personal/`](../../../docs/personal/) (detailed recipes).
 
-## Cuándo SE DEBE usar este skill
+---
 
-**SIEMPRE** ante cualquiera de estos trabajos sobre el fork:
+## When to use this skill — and when not to
 
-- Agregar/cambiar un **config de usuario** (`config/<app>/`)
-- Agregar/cambiar una **webapp o launcher** (`applications/*.desktop` + `applications/icons/`)
-- Agregar/cambiar un **comando `omarchy-*`** (`bin/omarchy-*`)
-- Añadir/editar un **wrapper de terceros** (mise / npm / instaladores oficiales → `install/user/*.sh` + `omarchy-mise-install`)
-- Tocar el **set de paquetes** (`install/omarchy-*.packages`)
-- Escribir un **script de provisioning / migración** (`install/` / `migrations/*.sh`)
-- **Publicar** el repo personal (Action `release-personal.yml`)
-- **Onboarding** de una máquina nueva o **sync con upstream** (cadencia W9)
-- Cualquier duda de "¿dónde va este cambio?"
+**Always** use it for the following work on the fork:
 
-**No** usar para:
-- Customización end-user de un sistema instalado → `default/agents/skills/omarchy/SKILL.md`.
-- Desarrollo genérico del repo base → `AGENTS.md` y `agents/skills/*`.
+- Add/change a **user config** (`config/<app>/`)
+- Add/change a **web app or launcher** (`applications/*.desktop` + `applications/icons/`)
+- Add/change an **`omarchy-*` command** (`bin/omarchy-*`)
+- Add/edit a **third-party wrapper** (mise / npm / official installers → `install/user/*.sh` + `omarchy-mise-install`)
+- Touch the **package set** (`install/omarchy-*.packages`)
+- Write a **provisioning / migration script** (`install/` / `migrations/*.sh`)
+- **Publish** the personal repo (Action `release-personal.yml`)
+- **Onboard** a new machine or **sync with upstream** (cadence)
+- Any "where does this change go?" question
 
-## Paso obligatorio: la Matriz de Decisión
+**Not** for:
 
-**Antes de tocar el fork, clasificar el cambio en UNA fila de esta tabla.** La fila decide TODO lo
-que sigue (dónde, paquete, validación dev y cómo llega a las máquinas). No existe un "cajón de
-sastre"; si un cambio no encaja, es señal de no seguir el modelo upstream → parar y re-preguntar.
+- End-user customization of an installed system → `default/agents/skills/omarchy/SKILL.md`.
+- Generic base-repo development → `AGENTS.md` and `agents/skills/*`.
 
-| Tipo de cambio | Dónde en el fork | Dónde se instala | Paquete | Validación dev | Llega a las máquinas |
+---
+
+## Mandatory first step: the Decision Matrix
+
+**Before touching the fork, classify the change into EXACTLY ONE row of this table.** The row decides
+everything that follows (where, package, dev validation, and how it reaches machines). There is no
+"catch-all"; if a change does not fit a row, that is a signal the change does not follow the upstream
+model — stop and re-ask.
+
+| Change type | Where in the fork | Where it installs | Package | Dev validation | Reaches machines via |
 |---|---|---|---|---|---|
-| **Config de usuario** (kitty, foot, hypr…) | `config/<app>/` | `~/.config/<app>/` (seed `/etc/skel` + fuente de resync `/usr/share/omarchy/config`) | `omarchy-settings` | `omarchy dev pkg-test` + `omarchy refresh config <archivo>` | `omarchy update` |
-| **Webapp / launcher** | `applications/*.desktop` + `applications/icons/` | `~/.local/share/applications/` (+ iconos hicolor) | `omarchy-settings` | `omarchy dev pkg-test` + `omarchy refresh-applications` | `omarchy update` |
-| **Ejecutable propio** (`omarchy-*`) | `bin/omarchy-*` (con metadatos `# omarchy:summary=…`) | `/usr/bin/` | `omarchy` | `omarchy dev pkg-test` | `omarchy update` |
-| **Wrapper de terceros** (mise, npm, oficiales) | `install/user/*.sh` + líneas `omarchy-mise-install` / `omarchy-install-*` | `~/.local/bin/` (idempotente) | `omarchy-settings` | `omarchy refresh-applications` (ejecuta `install/user/*.sh`) | `omarchy update` |
-| **Set de paquetes** | `install/omarchy-base.packages` / `omarchy-other.packages` | instalado por pacman (ISO / `reinstall pkgs`) | `omarchy-settings` | `omarchy reinstall pkgs` | `omarchy update` |
-| **Provisioning / migración** | `install/` + `migrations/*.sh` | `/usr/share/omarchy/` | `omarchy` | `omarchy dev pkg-test` (+ ejecutar) | `omarchy update` (migraciones solas) |
+| **User config** (kitty, foot, hypr…) | `config/<app>/` | `~/.config/<app>/` (seed `/etc/skel` + resync source `/usr/share/omarchy/config`) | `omarchy-settings` | `omarchy dev pkg-test` + `omarchy refresh config <relpath>` | `omarchy update` |
+| **Web app / launcher** | `applications/*.desktop` + `applications/icons/` | `~/.local/share/applications/` (+ hicolor icons) | `omarchy-settings` | `omarchy dev pkg-test` + `omarchy refresh applications` | `omarchy update` |
+| **Own executable** (`omarchy-*`) | `bin/omarchy-*` (with `# omarchy:summary=…` metadata) | `/usr/bin/` | `omarchy` | `omarchy dev pkg-test` | `omarchy update` |
+| **Third-party wrapper** (mise, npm, official) | `install/user/*.sh` + `omarchy-mise-install` / `omarchy-install-*` lines | `~/.local/bin/` (idempotent) | `omarchy-settings` | `omarchy refresh applications` (runs `install/user/*.sh`) | `omarchy update` |
+| **Package set** | `install/omarchy-base.packages` / `omarchy-other.packages` | installed by pacman (ISO / `reinstall pkgs`) | `omarchy-settings` | `omarchy reinstall pkgs` | `omarchy update` |
+| **Provisioning / migration** | `install/` + `migrations/*.sh` | `/usr/share/omarchy/` | `omarchy` | `omarchy dev pkg-test` (+ run it) | `omarchy update` (migrations only) |
 
-> **Nota sobre el POC `omarchy-personal-bootstrap-launchers`:** quedó **DEPRECADO como mecanismo
-> vivo** (fue un POC para la Etapa 2). Su lógica se absorbe en la fila **"Wrapper de terceros"**
-> (`install/user/*.sh` + `omarchy-mise-install`). El script se conserva en `bin/` como
-> referencia/ejemplo de integración, no como flujo activo. No crear nuevos cambios por ese camino.
+> **Deprecated POC — `omarchy-personal-bootstrap-launchers`:** it is **DEPRECATED as a living
+> mechanism** (it was the Stage-2 proof of concept). Its logic is absorbed by the **"Third-party
+> wrapper"** row (`install/user/*.sh` + `omarchy-mise-install`). The script remains in `bin/` only as
+> a reference/example of integration, not as an active flow. Do not create new changes through that
+> path.
 
-## Los dos escenarios (no hay un tercero)
+---
 
-### A) Escenario DEV — "estoy construyendo y validando en la máquina dev"
+## The two scenarios (there is no third)
+
+### A) DEV scenario — "I am building and validating on the dev machine"
 
 ```text
-editar la fuente en el fork → omarchy dev pkg-test → refresh del componente → validar
+edit the source in the fork → omarchy dev pkg-test → refresh the component → validate
 ```
 
-- `omarchy dev pkg-test` construye e instala **localmente** el par desde el checkout (`omarchy-dev` /
-  `omarchy-settings-dev`, versión `dev.<sha>`). **No publica nada.** Deja la máquina en línea `-dev`.
-- Luego **refresh** del componente que tocaste:
+- `omarchy dev pkg-test` builds and installs **locally** the pair from the checkout (`omarchy-dev` /
+  `omarchy-settings-dev`, version `dev.<sha>`). **It publishes nothing.** It leaves the machine on the
+  `-dev` channel.
+- Then **refresh** the component you touched:
   - config → `omarchy refresh config <relpath>`
-  - webapp/launcher o wrapper → `omarchy refresh-applications`
-  - set de paquetes → `omarchy reinstall pkgs`
-- En dev `pacman -Q omarchy omarchy-settings` muestra `dev.<sha>`.
+  - web app/launcher or wrapper → `omarchy refresh applications`
+  - package set → `omarchy reinstall pkgs`
+- In dev, `pacman -Q omarchy omarchy-settings` reports `dev.<sha>`.
 
-### B) Escenario MÁQUINAS — "lo llevo a todas mis computadoras"
+### B) MACHINES scenario — "I take it to all my computers"
 
-**El único gatillo de distribución es `omarchy update`.**
+**The only distribution trigger is `omarchy update`.**
 
 ```text
-git commit + push origin personal → Action release-personal → par republicado →
-omarchy update (en cada máquina) → pacman instala el par personal → cambios presentes
+git commit + push origin personal → Action release-personal → pair re-published →
+omarchy update (on each machine) → pacman installs the personal pair → changes are present
 ```
 
-- Los archivos nuevos llegan empaquetados; materializarlos en el `$HOME` de **usuarios existentes**
-  requiere un refresh (dev) o una **migración** (una vez por máquina, automática). Usuarios **nuevos**
-  los reciben al crearse vía `/etc/skel`.
-- **Regla de oro:** nada se instala por script suelto per-máquina ni por mecanismos paralelos; todo
-  viaja por `omarchy update`.
+- New files arrive packaged; materializing them into the `$HOME` of **existing users** requires a
+  refresh (dev) or a **migration** (once per machine, automatic). **New** users receive them at
+  creation via `/etc/skel`.
+- **Golden rule:** nothing is installed by a loose per-machine script or a parallel mechanism;
+  everything travels through `omarchy update`.
 
-## Flujo de trabajo recomendado
+---
 
-1. **Clasificar** el cambio en la Matriz de Decisión (ver arriba).
-2. **Implementar** el cambio en su ubicación del fork, siguiendo la receta W# correspondiente
-   (ver `docs/personal/recetas.md`) y las convenciones de upstream (`AGENTS.md`, `agents/skills/*`,
-   `docs/file-layout.md`); los scripts de `bin/` llevan metadatos `# omarchy:summary=` etc.
-3. **Validar en dev** (Escenario A): `omarchy dev pkg-test` + refresh + verificar que funciona.
-4. **Publicar** (Escenario B): `git commit + push origin personal`; disparar la Action de release con
-   `--ref personal`; en cada máquina `omarchy update`.
-5. Añadir **migración** si la personalización debe tocar un estado existente en máquinas ya creadas.
+## Recommended workflow
 
-## Decisiones clave de arquitectura (resumen)
+1. **Classify** the change in the Decision Matrix (above).
+2. **Implement** the change in its fork location, following the corresponding W# recipe
+   (`docs/personal/recipes.md`) and the upstream conventions (`AGENTS.md`, `agents/skills/*`,
+   `docs/file-layout.md`); `bin/` scripts carry `# omarchy:summary=` etc. metadata.
+3. **Validate in dev** (scenario A): `omarchy dev pkg-test` + refresh + verify it works.
+4. **Publish** (scenario B): `git commit + push origin personal`; trigger the release Action with
+   `--ref personal`; on each machine `omarchy update`.
+5. Add a **migration** if the change must touch existing state on already-created machines.
 
-- **Dos repos, dos paquetes:** `omarchy` (motor → `bin/` a `/usr/bin/`) y `omarchy-settings`
-  (archivos: `config/`, `applications/`, `install/user/`, sets). Lockstep obligatorio.
-- **Sombreado parcial:** `[omarchy-personal]` antes de `[omarchy]` en `default/pacman/pacman-stable.conf`.
-- **Regla `pkgrel`:** base alta `99`, +1 por republicación del mismo `pkgver` (autoderivado por la Action).
-- **Plugins de omarchy = solo widgets del shell Quickshell**; no se usan para ejecutables/configs (descartado).
-- Detalle en `docs/personal/pipeline-publicacion.md` y `docs/personal/decisions/`.
+---
 
-## Guía rápida de comandos de validación
+## Key architecture decisions (summary)
+
+- **Two repos, two packages:** `omarchy` (engine → `bin/` to `/usr/bin/`) and `omarchy-settings`
+  (files: `config/`, `applications/`, `install/user/`, sets). Mandatory lockstep.
+- **Partial shading:** `[omarchy-personal]` before `[omarchy]` in
+  `default/pacman/pacman-stable.conf`.
+- **`pkgrel` rule:** high base `99`, `+1` per re-publication of the same `pkgver` (derived by the
+  Action automatically).
+- **Omarchy plugins = only Quickshell shell widgets**; not used for executables/configs (rejected).
+- Details in `docs/personal/release-pipeline.md` and `docs/personal/decisions/`.
+
+---
+
+## Validation command quick reference
 
 ```bash
-omarchy dev pkg-test               # instala el par dev desde el checkout local
-omarchy refresh-applications       # materializa .desktop + wrappers en ~
-omarchy refresh config <relpath>   # copia un config suelto a ~/.config/
-omarchy reinstall pkgs             # reconcilia el set con install/omarchy-*.packages
-omarchy reinstall-configs          # re-copia TODO /etc/skel sobre ~ (nuclear)
-./test/all                         # suites CLI + shell (correr antes de publicar)
+omarchy dev pkg-test               # install the dev pair from the local checkout
+omarchy refresh applications       # materialize .desktop files + wrappers into ~
+omarchy refresh config <relpath>   # copy a single config into ~/.config/
+omarchy reinstall pkgs             # reconcile the set with install/omarchy-*.packages
+omarchy reinstall-configs          # re-copy ALL of /etc/skel over ~ (nuclear)
+./test/all                         # CLI + shell suites (run before publishing)
 ```
+
+---
 
 ## Troubleshooting
 
-- ¿Un cambio "no aparece"? Reconstruir el paquete NO materializa nada en un usuario existente;
-  hay que correr el refresh correspondiente.
-- ¿`omarchy update` puso el par oficial y "perdió" mi personalización? Lag de cadencia/versión:
-  republicar el personal con `pkgver >=` y `pkgrel` creciente (roll-forward). Ver `docs/personal/runbook.md`.
-- ¿Dudas de dónde va algo? La Matriz de Decisión manda; re-leerla y si no encaja, preguntar.
+- **A change "is not showing up"?** Rebuilding the package does NOT materialize anything into an
+  existing user; run the corresponding refresh.
+- **`omarchy update` put the official pair and "lost" my personalization?** Cadence/version lag:
+  re-publish the personal with `pkgver >=` and a growing `pkgrel` (roll-forward). See
+  `docs/personal/runbook.md`.
+- **Not sure where something goes?** The Decision Matrix rules; re-read it and, if it does not fit,
+  ask.

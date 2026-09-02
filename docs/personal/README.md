@@ -1,64 +1,90 @@
-# docs/personal — Documentación del fork personal
+# docs/personal — Personal fork documentation
 
-Documentación operativa del **fork personal de Omarchy** (`robert-flo/omarchy`, rama `personal`).
-Aquí vive el conocimiento que antes residía en el repositorio de notas *scratchpad* (que queda como
-histórico). Esta carpeta es la **fuente operativa**; cualquier agente/humano que trabaje el fork debe
-leer el skill obligatorio y luego las recetas según la tarea.
+Operating documentation for the **personal Omarchy fork** (`robert-flo/omarchy`, branch `personal`).
+This is where the knowledge that previously lived in the *scratchpad* notes repository now lives
+(that repo is kept as history). This folder is the **operational source**; any agent/human working on
+the fork reads the mandatory skill first, then the recipe for the task at hand.
 
-> **Empieza por [`agents/skills/personal-fork/SKILL.md`](../../agents/skills/personal-fork/SKILL.md)**:
-> contiene la **Matriz de Decisión** y los dos escenarios. Este índice solo ordena los documentos.
+> **Start with [`agents/skills/personal-fork/SKILL.md`](../../agents/skills/personal-fork/SKILL.md)**:
+> it contains the **Decision Matrix** and the two scenarios. This index only orders the documents.
 
 ---
 
-## Lectura por tarea
+## Read by task
 
-| Quiero… | Leo |
+| I want to… | Read |
 |---|---|
-| …decidir dónde va cada cambio (puerta obligatoria) | [`SKILL.md`](../../agents/skills/personal-fork/SKILL.md) — Matriz de Decisión |
-| …la receta exacta de un flujo (W1–W10) | [`recetas.md`](recetas.md) |
-| …cómo publica la Action el repo personal | [`pipeline-publicacion.md`](pipeline-publicacion.md) |
-| …instalar/actualizar una máquina nueva | [`onboarding.md`](onboarding.md) |
-| …seguir un release de upstream (cadencia) | [`cadencia.md`](cadencia.md) |
-| …agregar/quitar una webapp o su bootstrap | [`webapps.md`](webapps.md) |
-| …modificar configs de `~/.config` o escribir una migración | [`configs-migraciones.md`](configs-migraciones.md) |
-| …qué hacer si algo falla | [`runbook.md`](runbook.md) |
-| …definición de un término | [`glosario.md`](glosario.md) |
-| …por qué se decidió algo | [`decisions/`](decisions/) |
-| …la versión publicada/instalada actual | la tabla "Estado" abajo |
+| …decide where each change goes (mandatory gate) | [`SKILL.md`](../../agents/skills/personal-fork/SKILL.md) — Decision Matrix |
+| …get the exact steps for a flow (W1–W10) | [`recipes.md`](recipes.md) |
+| …see how the Action publishes the personal repo | [`release-pipeline.md`](release-pipeline.md) |
+| …install / update a new machine | [`onboarding.md`](onboarding.md) |
+| …follow an upstream release (cadence) | [`cadence.md`](cadence.md) |
+| …add/remove a web app or its bootstrap | [`webapps.md`](webapps.md) |
+| …change `~/.config` configs or write a migration | [`configs-and-migrations.md`](configs-and-migrations.md) |
+| …know what to do when something fails | [`runbook.md`](runbook.md) |
+| …look up a term | [`glossary.md`](glossary.md) |
+| …know why something was decided | [`decisions/`](decisions/) |
+| …see the current published/installed version | the **State** table below |
 
 ---
 
-## Estado (fuente única de versiones)
+## State (single source of truth)
 
-> Esta tabla es la **fuente única de estado** del proyecto. No inventar versiones; leerlas de aquí.
+> This table is the **single source of truth for project state**. Do not invent versions; read them
+> from here. No version number is hard-coded anywhere else in this tree — if you see one, report it.
 
-| Paquete | Publicado | En la máquina dev |
+| Item | published | dev machine |
 |---|---|---|
-| `omarchy` + `omarchy-settings` (par lockstep) | **4.0.2-103** | **4.0.2-103** (convergida; 78 launchers en el menú) |
-| `hola-mundo` (PoC de paquete personal) | **0.1.0-2** | **0.1.0-2** |
+| `omarchy` + `omarchy-settings` (lockstep pair) | `4.0.2-103` | `4.0.2-103` (converged) |
+| `hola-mundo` (personal-package PoC) | `0.1.0-2` | `0.1.0-2` |
+| launchers in the menu (dev) | — | `78` |
 
-Repo personal publicado (firmado con la clave dedicada `D5E75EAC51A44715`):
-<https://robert-flo.github.io/omarchy-personal-repo/stable/x86_64>.
+Placeholders used across this tree (all defined here, no literal in the docs):
 
-> **Nota operativa:** la Action corre en `robert-flo/omarchy-pkgs`; el dispatch SIEMPRE con
-> `--ref personal`. Desde el endurecimiento L8 aborta sola si se dispara desde otra rama, deriva el
-> `pkgrel` del par y admite ensayo con `dry_run`. La vigilancia de cadencia (`sync-check.yml`, cron)
-> avisa vía issue `[Cadencia]` si upstream publica y el pin se queda atrás.
+| Placeholder | Meaning |
+|---|---|
+| `<CURRENT_PAR>` | Current published/installed `omarchy`+`omarchy-settings` version (e.g. `4.0.2-103`) |
+| `<CURRENT_HOLA>` | Current `hola-mundo` PoC version |
+| `<CURRENT_LAUNCHERS>` | Number of launchers in the dev launcher menu |
+| `<UPSTREAM_TAG>` | The upstream `quattro` tag being rebased/pinned (e.g. `v4.0.2`) |
+| `<GPG_KEY_ID>` | Personal repo signing key ID (currently `D5E75EAC51A44715`) |
+| `<REPO_URL>` | Personal pacman repo base URL, e.g. `https://robert-flo.github.io/omarchy-personal-repo/stable/x86_64` |
+| `<CHECKOUT>` | Path of the local `robert-flo/omarchy` checkout |
+
+- Personal repo URL: `<REPO_URL>` — served by the dedicated signing key `<GPG_KEY_ID>`.
+- The release Action runs in `robert-flo/omarchy-pkgs`; dispatch is **always** with `--ref personal`.
+  Since the 2026-09-01 hardening it aborts by itself if triggered from another branch, derives the
+  pair's `pkgrel`, and supports a `dry_run` rehearsal. Cadence watch (`sync-check.yml`, cron) opens a
+  `[Cadence]` issue when upstream publishes and the pin falls behind.
 
 ---
 
-## Contexto de una frase
+## One-line context
 
-N máquinas Omarchy **idénticas y mantenidas solas por `omarchy update`**, con personalizaciones que
-viajan como **cambios de fuente en este fork** y se sirven desde un **repo pacman personal en GitHub
-Pages** generado por una **GitHub Action**, siguiendo el modelo upstream con miras a contribuir de
-vuelta.
+N identical Omarchy machines, **maintained on their own by `omarchy update`**, with personalizations
+that travel as **source changes in this fork** and are served from a **personal pacman repository on
+GitHub Pages** generated by a **GitHub Action**, following the upstream model with a view to
+contributing back.
 
-## Repos implicados
+## Repositories involved
 
-| Repo | Rol |
+| Repo | Role |
 |---|---|
-| `robert-flo/omarchy` | fork fuente, rama `personal` sobre `upstream/quattro` (este repo) |
-| `robert-flo/omarchy-pkgs` | PKGBUILDs + maquinaria de build/release; ahí corre la Action |
-| `robert-flo/omarchy-personal-repo` | repo pacman servido en GitHub Pages (branch `gh-pages`) |
-| `robert-flo/scratchpad` | **histórico** (bitácora y snapshots pasados; ya no es la fuente operativa) |
+| `robert-flo/omarchy` | source fork, branch `personal` over `upstream/quattro` (this repo) |
+| `robert-flo/omarchy-pkgs` | PKGBUILDs + build/release machinery; the Action runs here |
+| `robert-flo/omarchy-personal-repo` | pacman repo served on GitHub Pages (branch `gh-pages`) |
+| `robert-flo/scratchpad` | **history** (log and past snapshots; no longer the operational source) |
+
+---
+
+## Scope and maturity
+
+- **Status:** active proof of concept (pre-1.0), driven by a single maintainer. The mechanisms
+  (Decision Matrix, lockstep publishing, partial shading, cadence) are established and exercised;
+  breadth of coverage grows with each machine on-boarded.
+- **Known limitations and non-goals** are recorded explicitly in
+  [`decisions/README.md`](decisions/) (ADR-007) and `AGENTS.personal.md` — this tree does not hide
+  the borders of what is solved.
+- **Security posture:** private key material (GPG + deploy key) exists only as Action secrets, never
+  in git; the public signing key is shipped in `keys/`. Rotation/DR procedures live in
+  [`ADRs`](decisions/ADR-006-keys.md) and the [`runbook`](runbook.md).

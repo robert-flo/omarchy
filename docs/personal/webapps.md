@@ -1,31 +1,32 @@
-# Webapps y launchers
+# Web apps and launchers
 
-Cómo agregar, cambiar y quitar webapps del fork, y el estado de los launchers que las materializan
-en las máquinas. Este documento debe leerse **a la luz de la fila "Webapp / launcher" de la Matriz de
-Decisión** (`SKILL.md`) y de la nota de deprecación del POC de launchers.
+How to add, change and remove web apps in the fork, and the state of the launchers that materialize
+them on machines. Read this **in light of the "Web app / launcher" row of the Decision Matrix**
+(`SKILL.md`) and the deprecated-launcher-bootstrap note.
 
-## En Omarchy las webapps viven dentro del paquete
+## In Omarchy, web apps live inside the package
 
-Las webapps **NO** son accesos que se agregan a mano al menú: son archivos `.desktop` que viajan
-*dentro* del paquete `omarchy-settings`. En el repo del fork viven en:
+Web apps are **NOT** menu entries you add by hand: they are `.desktop` files that travel *inside* the
+`omarchy-settings` package. In the fork repo they live at:
 
-- `applications/<Nombre>.desktop` — el lanzador.
-- `applications/icons/<Nombre>.png` (o `.svg`) — el icono.
+- `applications/<Name>.desktop` — the launcher.
+- `applications/icons/<Name>.png` (or `.svg`) — the icon.
 
-Al construir el paquete, el PKGBUILD captura por globo (cualquier `.desktop` o icono nuevo entra sin
-tocar el PKGBUILD):
+When building the package, the PKGBUILD captures them by glob (any new `.desktop` or icon enters
+without touching the PKGBUILD):
 
-1. Copia los `.desktop` a `/usr/share/omarchy/applications/`; de ahí `omarchy-refresh-applications`
-   los copia a `~/.local/share/applications/` (la carpeta que ve el launcher del usuario).
-2. Convierte el icono con `magick` a los tamaños hicolor
-   `/usr/share/icons/hicolor/{256,48}x{256,48}/apps/<icon_id>.png`, donde `icon_id` = nombre en
-   **minúsculas** + no-alfanuméricos → `-`.
-3. Siembra los `.desktop` en `/etc/skel/.local/share/applications/` para usuarios nuevos.
+1. Copies `.desktop` files to `/usr/share/omarchy/applications/`; from there
+   `omarchy refresh applications` copies them to `~/.local/share/applications/` (the folder the user's
+   launcher sees).
+2. Converts the icon with `magick` to hicolor sizes
+   `/usr/share/icons/hicolor/{256,48}x{256,48}/apps/<icon_id>.png`, where `icon_id` = name
+   **lowercased** + non-alphanumerics → `-`.
+3. Seeds the `.desktop` files into `/etc/skel/.local/share/applications/` for new users.
 
-El `Exec=` apunta a `omarchy-launch-webapp <URL>`, que abre el navegador por defecto en **modo app**
-(ventana sin barra de navegación) vía `uwsm-app -- <browser> --app=<url>`.
+`Exec=` points to `omarchy-launch-webapp <URL>`, which opens the default browser in **app mode** (a
+window with no navigation bar) via `uwsm-app -- <browser> --app=<url>`.
 
-## El `.desktop` (plantilla)
+## The `.desktop` (template)
 
 ```desktop
 [Desktop Entry]
@@ -38,64 +39,65 @@ Icon=xataka
 StartupNotify=true
 ```
 
-Reglas rápidas:
-- `Exec` siempre `omarchy-launch-webapp <URL>` (o un handler propio). Si la URL lleva caracteres
-  reservados (`?&#`…), entre comillas dobles. Para launchers que necesitan shell
-  (`cd "$HOME/src" && exec …`) el canon es `sh -c "…\"\$HOME…\"…"` (dobles + `\"` y `\$`).
-- `Icon` = nombre en minúsculas con espacios/acentos → guion (`Google Photos.png` → `google-photos`).
-- Si maneja un esquema (mailto, ...): `MimeType=x-scheme-handler/<esquema>` y `xdg-mime default`.
+Quick rules:
+- `Exec` is always `omarchy-launch-webapp <URL>` (or a custom handler). If the URL contains reserved
+  characters (`?&#`…), wrap it in double quotes. For launchers that need a shell
+  (`cd "$HOME/src" && exec …`), the canon is `sh -c "…\"\$HOME…\"…"` (double quotes + `\"` and `\$`).
+- `Icon` = name in lowercase with spaces/accents → hyphen (`Google Photos.png` → `google-photos`).
+- If it handles a scheme (mailto, ...): `MimeType=x-scheme-handler/<scheme>` and `xdg-mime default`.
 
-## Agregar una webapp (en 4 pasos)
+## Add a web app (in 4 steps)
 
-Trabaja en el fork, rama `personal`:
+Work on the fork, branch `personal`:
 
 ```bash
-cd ~/Work/omarchy/omarchy-installer
+cd <CHECKOUT>   # the omarchy fork checkout
 
-# 1) Crear los dos archivos (modelo: applications/Xataka.desktop e icons/Xataka.png)
-# 2) Commitear
-git add applications/<Nombre>.desktop applications/icons/<Nombre>.png
-git commit -m "personal: add <Nombre> webapp"
+# 1) Create the two files (model: applications/Xataka.desktop and icons/Xataka.png)
+# 2) Commit
+git add applications/<Name>.desktop applications/icons/<Name>.png
+git commit -m "personal: add <Name> webapp"
 git push origin personal
 ```
 
 ```bash
-# 3) Publicar (reprisa el repo personal con la Action; pkgrel autoderivado)
+# 3) Publish (the Action re-runs the personal repo; pkgrel derived automatically)
 gh workflow run release-personal.yml -R robert-flo/omarchy-pkgs \
-  --ref personal -f version=v4.0.2
+  --ref personal -f version=v<UPSTREAM_TAG>
 ```
 
 ```bash
-# 4) En cada máquina: actualizar y refrescar lanzadores
+# 4) On each machine: update and refresh launchers
 omarchy update
-omarchy-refresh-applications
+omarchy refresh applications
 ```
 
-## Cambiar o quitar una webapp
+## Change or remove a web app
 
-- **Cambiar** (URL, nombre, icono): edita el `.desktop` / icono, commit `personal: update <app>`,
-  publica (paso 3) y actualiza (paso 4).
-- **Quitar**: borra los dos archivos, commit `personal: remove <app>`, publica y actualiza. En las
-  máquinas existentes, `omarchy-refresh-applications` quita el lanzador sobrante al refrescar.
+- **Change** (URL, name, icon): edit the `.desktop`/icon, commit `personal: update <app>`, publish
+  (step 3) and update (step 4).
+- **Remove**: delete the two files, commit `personal: remove <app>`, publish and update. On existing
+  machines, `omarchy refresh applications` removes the leftover launcher when refreshing.
 
-## Estado del bootstrap de launchers (POC deprecado)
+## State of the launcher bootstrap (deprecated PoC)
 
-La Etapa 2 cosechó 60 launchers nuevos (39 webapps + 19 TUI/custom + 2 de Microsoft Edge) + sus 41
-iconos, publicados en el par 4.0.2-103; **operativos en dev** (los 78 launchers del menú resuelven sus
-bins). Para dejarlos operativos se creó un POC, `bin/omarchy-personal-bootstrap-launchers` (idempotente),
-que instala las dependencias que corren los launchers (CLIs de mise/npm, instaladores oficiales,
-Hermes, `~/src`).
+Stage 2 harvested 60 new launchers (39 web apps + 19 TUI/custom + 2 Microsoft Edge) + their icons,
+published in the `<CURRENT_PAR>` pair, **operational in dev** (the `<CURRENT_LAUNCHERS>` launchers in
+the menu resolve their bins). To make them operational, a PoC was created,
+`bin/omarchy-personal-bootstrap-launchers` (idempotent), which installs the dependencies the launchers
+run (mise/npm CLIs, official installers, Hermes, `~/src`).
 
-> **⚠️ DEPRECADO como mecanismo vivo (13ª parte).** Ese POC no es el camino correcto a futuro: lo
-> correcto es que su lógica viva en `install/user/*.sh` + `omarchy-mise-install` (fila **"Wrapper de
-> terceros"** de la Matriz) y viaje a las máquinas vía `omarchy update`. El script se conserva en
-> `bin/` como **referencia/ejemplo de integración**, no como flujo activo. No crear nuevos cambios
-> por ese camino.
+> **⚠️ DEPRECATED as a living mechanism.** That PoC is not the right path forward: the correct one is
+> for its logic to live in `install/user/*.sh` + `omarchy-mise-install` (the "Third-party wrapper" row
+> of the Decision Matrix) and to travel to machines via `omarchy update`. The script stays in `bin/`
+> as a **reference/example of integration**, not as an active flow. Do not create new changes through
+> that path.
 
-### Cómo es el patrón correcto (wrapper de terceros)
+### How the correct pattern works (third-party wrapper)
 
-`omarchy refresh-applications` → `install/user/mise.sh` → `omarchy-mise-install <paquete> <cmd>`
-escribe un stub idempotente en `~/.local/bin/<cmd>` (MISE_MINIMUM_RELEASE_AGE=0, `mise use -g` +
-`exec mise x`). Ejemplos en el fork: `agy`, `opencode`, `omp`, `grok`, `gh`, `hey`, `ori`, `ghui`,
-`hunk`, `codex`, `claude`, `playwright`, `pi`, + `omarchy-install-hermes-cli || true`. Ver
-`docs/personal/recetas.md` (fila Wrapper de terceros) y `docs/personal/configs-migraciones.md`.
+`omarchy refresh applications` → `install/user/mise.sh` → `omarchy-mise-install <package> <cmd>`
+writes an idempotent stub in `~/.local/bin/<cmd>` (MISE_MINIMUM_RELEASE_AGE=0, `mise use -g` +
+`exec mise x`). Live examples in the fork: `agy`, `opencode`, `omp`, `grok`, `gh`, `hey`, `ori`,
+`ghui`, `hunk`, `codex`, `claude`, `playwright`, `pi`, + `omarchy-install-hermes-cli || true`. See
+[`recipes.md`](recipes.md) (Third-party wrapper row) and
+[`configs-and-migrations.md`](configs-and-migrations.md).

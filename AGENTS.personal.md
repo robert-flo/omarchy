@@ -1,83 +1,84 @@
-# AGENTS.personal.md — Guía operativa del fork personal
+# AGENTS.personal.md — Operating guide for the personal fork
 
-Esta es la puerta de entrada para **cualquier agente o humano que vaya a tocar este fork**.
-Condensa el conocimiento que antes vivía en el repositorio de notas *scratchpad* (que queda como
-histórico de referencias). El objetivo es que **todas las personalizaciones viajen vía
-`omarchy update`** a las máquinas cliente siguiendo 100% el patrón upstream, y que siempre se sepa
-dónde colocar cada cambio sin inventar mecanismos paralelos.
+This is the entry point for **any agent or human who will touch this fork**. It condenses the
+knowledge that previously lived in the *scratchpad* notes repository (kept only as a historical
+reference). The goal is that **every customization reaches client machines through `omarchy update`**
+following the upstream pattern 100%, and that it is always clear where each change goes — without
+inventing parallel mechanisms.
 
-> **Lee primero `agents/skills/personal-fork/SKILL.md`** — es el documento operativo obligatorio:
-> contiene la **Matriz de Decisión** (dónde va cada cambio) y el flujo de los dos escenarios
-> (`omarchy dev pkg-test` en dev / `omarchy update` en las máquinas). Esta raíz solo es el índice.
-
----
-
-## Por qué existe este fork
-
-El dueño usa **N máquinas con Omarchy** instalado desde la ISO oficial. Todas deben ser **sistemas
-idénticos, mantenidos automáticamente por `omarchy update`**, con sus personalizaciones aplicadas
-por encima de un Omarchy vanilla. Estrategia acordada:
-
-1. **Fork del repo fuente** `omacom/omarchy` mantenido en sync con upstream `quattro` (rama `personal`).
-2. **Toda personalización es un cambio de fuente en el fork** (nunca un parche de instalación ni un
-   script suelto por máquina).
-3. Los cambios se **empaquetan como paquetes pacman propios**, publicados en un **repo pacman
-   personal en GitHub Pages**, que las máquinas consumen por el flujo normal `omarchy update`.
-4. **Se sigue el flujo upstream al pie de la letra**; el objetivo secundario es **contribuir de
-   vuelta upstream**, así que cada personalización debe tener la MISMA forma que un cambio aceptable
-   en un PR a `quattro`.
+> **Read [`agents/skills/personal-fork/SKILL.md`](agents/skills/personal-fork/SKILL.md) first** — it
+> is the mandatory operating document: it holds the **Decision Matrix** (where each change goes) and
+> the two-scenario flow (`omarchy dev pkg-test` in dev / `omarchy update` on machines). This root file
+> is only the index.
 
 ---
 
-## Dónde vive cada pieza
+## Why this fork exists
 
-| Qué | Dónde | Contenido |
+The owner runs **N machines with Omarchy installed from the official ISO**. All of them must be
+**identical systems, maintained automatically by `omarchy update`**, with personalizations applied on
+top of a vanilla Omarchy. Agreed strategy:
+
+1. **Fork of the upstream source** `omacom/omarchy`, kept in sync with upstream `quattro` (branch `personal`).
+2. **Every personalization is a source change in the fork** (never an install-time patch or a loose
+   per-machine script).
+3. Changes are **packaged as own pacman packages**, published to a **personal pacman repository on
+   GitHub Pages**, which machines consume through the normal `omarchy update` flow.
+4. **The upstream flow is followed to the letter**; a secondary goal is to **contribute back
+   upstream**, so each personalization must have the SAME shape as a change acceptable in a PR to
+   `quattro`.
+
+---
+
+## Where each piece lives
+
+| What | Where | Content |
 |---|---|---|
-| **Operación del agente** (obligatorio) | [`agents/skills/personal-fork/SKILL.md`](agents/skills/personal-fork/SKILL.md) | Matriz de Decisión + los dos escenarios + cómo operar |
-| **Recetas W1–W10** | [`docs/personal/recetas.md`](docs/personal/recetas.md) | flujo paso a paso de cada fila de la Matriz |
-| **Pipeline de publicación** (Action) | [`docs/personal/pipeline-publicacion.md`](docs/personal/pipeline-publicacion.md) | cómo la Action construye/publica el repo personal |
-| **Onboarding de máquina** | [`docs/personal/onboarding.md`](docs/personal/onboarding.md) | dejar una máquina nueva en el sistema personal |
-| **Cadencia / sync con upstream** | [`docs/personal/cadencia.md`](docs/personal/cadencia.md) | mantener el fork al día y republicar |
-| **Webapps / launchers** | [`docs/personal/webapps.md`](docs/personal/webapps.md) | agregar/modificar/quitar webapps y su bootstrap |
-| **Configs y migraciones** | [`docs/personal/configs-migraciones.md`](docs/personal/configs-migraciones.md) | configs de `~/.config` y migraciones únicas |
-| **Runbook de fallos** | [`docs/personal/runbook.md`](docs/personal/runbook.md) | qué hacer cuando algo falla |
-| **Glosario** | [`docs/personal/glosario.md`](docs/personal/glosario.md) | términos del proyecto |
-| **Decisiones (ADRs)** | [`docs/personal/decisions/`](docs/personal/decisions/) | por qué se decidió cada cosa |
+| **Agent operations** (mandatory) | [`agents/skills/personal-fork/SKILL.md`](agents/skills/personal-fork/SKILL.md) | Decision Matrix + the two scenarios + how to operate |
+| **Recipes W1–W10** | [`docs/personal/recipes.md`](docs/personal/recipes.md) | step-by-step flow for each Matrix row |
+| **Release pipeline** (Action) | [`docs/personal/release-pipeline.md`](docs/personal/release-pipeline.md) | how the Action builds/publishes the personal repo |
+| **Machine onboarding** | [`docs/personal/onboarding.md`](docs/personal/onboarding.md) | put a new machine on the personal system |
+| **Cadence / upstream sync** | [`docs/personal/cadence.md`](docs/personal/cadence.md) | keep the fork up to date and re-release |
+| **Web apps / launchers** | [`docs/personal/webapps.md`](docs/personal/webapps.md) | add/modify/remove web apps and their bootstrap |
+| **Configs and migrations** | [`docs/personal/configs-and-migrations.md`](docs/personal/configs-and-migrations.md) | `~/.config` configs and one-off migrations |
+| **Failure runbook** | [`docs/personal/runbook.md`](docs/personal/runbook.md) | what to do when something fails |
+| **Glossary** | [`docs/personal/glossary.md`](docs/personal/glossary.md) | project terms |
+| **Decisions (ADRs)** | [`docs/personal/decisions/`](docs/personal/decisions/) | why each thing was decided |
 
 ---
 
-## Reglas duras (incumplirlas es un error de arquitectura)
+## Hard rules (breaking any of them is an architecture error)
 
-1. **Nada de mecanismos paralelos**: no crear repos aparte, no dotfiles managers, no scripts
-   per-máquina sueltos. Todo cae en una fila de la **Matriz de Decisión**; si algo no encaja,
-   re-preguntar (nunca inventar).
-2. **`omarchy update` es el único gatillo de distribución** a máquinas cliente. `omarchy dev
-   pkg-test` es **solo** para la máquina dev y la deja en línea `-dev`.
-3. **`omarchy` + `omarchy-settings` siempre se publican en lockstep** desde el mismo commit y al
-   mismo `pkgver` (§ lockstep).
-4. **Mantener el repo personal por delante del mirror oficial** en versión (regla `pkgrel` alta);
-   si no, `omarchy update` instalaría el par oficial y borraría personalizaciones.
-5. **`/etc/skel` solo siembra usuarios nuevos.** En máquinas con usuarios existentes, materializar
-   con `omarchy refresh ...` / `omarchy reinstall-*` o una migración.
-6. **Nunca tocar `/usr/share/omarchy/` a mano** en ninguna máquina; todo lo que vive ahí lo pone el
-   paquete.
-7. **Nunca commitear claves privadas** (GPG privada, deploy keys). El repo es público; las privadas
-   solo viven como secrets de la Action.
-8. Seguir las **convenciones de upstream**: el `AGENTS.md` de la raíz (dev del repo base), los
-   skills de `agents/skills/*` y `docs/file-layout.md`.
-
----
-
-## Estado conocido (fuente puntual)
-
-No duplicar aquí la tabla de versiones: es la **fuente única de estado** del proyecto y vive en
-`docs/personal/README.md`. El par publicado e instalado actual: ver ahí.
+1. **No parallel mechanisms**: no separate repos, no dotfiles managers, no loose per-machine scripts.
+   Everything falls into a row of the **Decision Matrix**; if something does not fit, re-ask (never
+   invent).
+2. **`omarchy update` is the only distribution trigger** to client machines. `omarchy dev pkg-test`
+   is **only** for the dev machine and leaves it on the `-dev` channel.
+3. **`omarchy` + `omarchy-settings` are always published in lockstep** from the same commit and the
+   same `pkgver` (§ lockstep).
+4. **Keep the personal repo ahead of the official mirror** in version (the `pkgrel` rule); otherwise
+   `omarchy update` would install the official pair and wipe out personalizations.
+5. **`/etc/skel` only seeds new users.** On machines with existing users, materialize with
+   `omarchy refresh …` / `omarchy reinstall-*` or a migration.
+6. **Never touch `/usr/share/omarchy/` by hand** on any machine; everything that lives there is placed
+   by the package.
+7. **Never commit private keys** (private GPG, deploy keys). The repo is public; private material
+   lives only as Action secrets.
+8. Follow the **upstream conventions**: the root `AGENTS.md` (dev of the base repo), the
+   `agents/skills/*` guides and `docs/file-layout.md`.
 
 ---
 
-## Relación con el repositorio de notas (scratchpad)
+## Current state (single source)
 
-El scratchpad (`robert-flo/scratchpad`) queda como **histórico** para futuras referencias (bitácora
-completa, snapshots). **Desde ahora el fork es la fuente operativa** y este árbol
-(AGENTS.personal.md + skill + `docs/personal/`) es donde se trabaja y actualiza. Si hay
-contradicciones, manda lo que hay aquí.
+Do not duplicate the version table here: it is the **single source of truth for project state** and
+lives in `docs/personal/README.md`. The currently published and installed pair: see there.
+
+---
+
+## Relationship with the notes repository (scratchpad)
+
+The scratchpad (`robert-flo/scratchpad`) remains as **history** for future reference (full log,
+snapshots). **From now on the fork is the operational source**, and this tree
+(AGENTS.personal.md + skill + `docs/personal/`) is where work happens and is kept up to date. In case
+of contradiction, what is written here prevails.
