@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Raindrop
+Exec=omarchy-launch-webapp "https://app.raindrop.io/my/0"
+Terminal=false
+Type=Application
+Icon=raindrop
+StartupNotify=true

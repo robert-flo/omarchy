@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=command-code
+Comment=Command Code - Coding agent that continuously learns your taste of writing code
+Exec=sh -c "cd \"\$HOME/src\" && exec xdg-terminal-exec --app-id=TUI.tile -e cmd"
+Terminal=false
+Icon=command-code
+Categories=ConsoleOnly;Utility;
+Keywords=tui;terminal;cli;

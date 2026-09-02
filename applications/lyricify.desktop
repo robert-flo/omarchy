@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Lyricify
+Comment=Terminal tool to display synced Spotify lyrics
+Exec=kitty --class=lyricify --title="Lyricify" -e lyricify
+Terminal=false
+Icon=spotify
+StartupNotify=false
+Categories=ConsoleOnly;Utility;
+Keywords=tui;terminal;cli;

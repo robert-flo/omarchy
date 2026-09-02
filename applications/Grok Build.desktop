@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Grok Build
+Comment=Grok Build CLI / xAI Agent
+Exec=sh -c "cd \"\$HOME/src\" && exec xdg-terminal-exec --app-id=TUI.tile -e grok"
+Terminal=false
+Icon=grok-ai
+Categories=ConsoleOnly;Utility;
+Keywords=tui;terminal;cli;

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Gemini AI
+Exec=omarchy-launch-webapp "https://gemini.google.com/app"
+Terminal=false
+Type=Application
+Icon=gemini-ai
+StartupNotify=true
