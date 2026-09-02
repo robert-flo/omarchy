@@ -1,3 +1,11 @@
+> **⚠️ ESTE REPOSITORIO ES EL FORK PERSONAL (`robert-flo/omarchy`, rama `personal`).**
+> **Antes de TOQUES CUALQUIER COSA, es OBLIGATORIO (de estricto cumplimiento en la rama `personal`)
+> leer [`AGENTS.personal.md`](AGENTS.personal.md) y el skill
+> [`agents/skills/personal-fork/SKILL.md`](agents/skills/personal-fork/SKILL.md)**
+> (contienen la **Matriz de Decisión** que fija dónde va cada cambio y cómo viaja vía `omarchy
+> update`). Las instrucciones de este `AGENTS.md` aplican al código base de Omarchy (upstream);
+> la guía operativa del **fork** está en esos archivos, que mandan sobre este para la rama `personal`.
+
 # Task Guides
 
 Deeper instructions for specific kinds of work live in `agents/skills/`. Read the
