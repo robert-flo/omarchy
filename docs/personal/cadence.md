@@ -18,6 +18,9 @@ release** (tag `vX.Y.Z` on `quattro`) or when `omarchy update` on the dev machin
 3. Run `./test/all`, `git push origin personal` and **run the release Action** (W7) with the `pkgver`
    of the newly-rebased tag (`pkgrel` is derived automatically).
 4. On each machine: `omarchy update` (and `omarchy reinstall pkgs` if the package list changed).
+   If the release ships **new launchers or first-use stubs**, follow it with
+   `omarchy provision user --force` to materialize them into each user's `$HOME` (update alone does
+   not re-provision an existing user).
 
 ```bash
 # in the checkout
