@@ -38,6 +38,7 @@ top of a vanilla Omarchy. Agreed strategy:
 | **Recipes W1–W10** | [`docs/personal/recipes.md`](docs/personal/recipes.md) | step-by-step flow for each Matrix row |
 | **Release pipeline** (Action) | [`docs/personal/release-pipeline.md`](docs/personal/release-pipeline.md) | how the Action builds/publishes the personal repo |
 | **Machine onboarding** | [`docs/personal/onboarding.md`](docs/personal/onboarding.md) | put a new machine on the personal system |
+| **Machine bootstrap** | [`docs/personal/machine-bootstrap/`](docs/personal/machine-bootstrap/) | the two on-boarding flows as a script: `--child` (receives) / `--dev` (builds) |
 | **Cadence / upstream sync** | [`docs/personal/cadence.md`](docs/personal/cadence.md) | keep the fork up to date and re-release |
 | **Web apps / launchers** | [`docs/personal/webapps.md`](docs/personal/webapps.md) | add/modify/remove web apps and their bootstrap |
 | **Configs and migrations** | [`docs/personal/configs-and-migrations.md`](docs/personal/configs-and-migrations.md) | `~/.config` configs and one-off migrations |

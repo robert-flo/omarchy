@@ -18,6 +18,7 @@ the fork reads the mandatory skill first, then the recipe for the task at hand.
 | …get the exact steps for a flow (W1–W10) | [`recipes.md`](recipes.md) |
 | …see how the Action publishes the personal repo | [`release-pipeline.md`](release-pipeline.md) |
 | …install / update a new machine | [`onboarding.md`](onboarding.md) |
+| …bootstrap a machine (`--child` / `--dev`) | [`machine-bootstrap/`](machine-bootstrap/) |
 | …follow an upstream release (cadence) | [`cadence.md`](cadence.md) |
 | …add/remove a web app or its bootstrap | [`webapps.md`](webapps.md) |
 | …change `~/.config` configs or write a migration | [`configs-and-migrations.md`](configs-and-migrations.md) |
