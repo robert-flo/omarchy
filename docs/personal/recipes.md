@@ -164,13 +164,16 @@ x86_64 machine, installed with the official stable Omarchy ISO. Detail in
 3. **`omarchy refresh pacman`** → writes the fork's `pacman.conf`/mirrorlist (already with
    `[omarchy-personal]` BEFORE `[omarchy]`).
 4. **`omarchy update`** → convergence (packages + migrations + hooks).
-5. **`omarchy reinstall pkgs`** → reconcile the set with `install/omarchy-base.packages`.
-6. **`omarchy reinstall-configs`** (optional; before creating users) → materialize `/etc/skel`.
-7. **Validate:** `pacman -Q omarchy omarchy-settings` report the personal version; the web app appears
+5. **`omarchy provision user --force`** → materializes configs, launchers and lazy first-use stubs
+   into the current user (update alone does NOT rewrite an existing `$HOME`).
+6. **`omarchy reinstall pkgs`** → reconcile the set with `install/omarchy-base.packages`.
+7. **`omarchy reinstall-configs`** (optional; before creating users) → materialize `/etc/skel`.
+8. **Validate:** `pacman -Q omarchy omarchy-settings` report the personal version; the web app appears
    in the launcher.
 
-> Steps 1–4 are repeatable/automatable as an `bin/omarchy-install-*` command (the shape of the existing
-> installers), NOT as a loose script.
+> Steps 1–6 are exactly what **`bootstrap-omarchy-machine.sh --child`** automates
+> (`docs/personal/machine-bootstrap/`). The script is the convenience front-end for these steps; it
+> only calls the `omarchy …` commands above (no parallel delivery).
 
 ---
 
