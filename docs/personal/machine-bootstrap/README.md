@@ -32,31 +32,16 @@ and re-ask rather than inventing a parallel delivery method.
 ## `--child` — the reliable path (default)
 
 Use it on **every machine except the one(s) you build on**, right after installing the official stable
-ISO. It is safe to re-run (idempotent) and is the reference flow in
-[`onboarding.md`](../onboarding.md).
+ISO. It is safe to re-run (idempotent).
 
 ```bash
 ./bootstrap-omarchy-machine.sh --child
 ```
 
-It does, in order:
-
-1. **Trust the personal repo's public key** (`pacman-key --add` + `--lsign-key`). The public key lives
-   in the fork (`keys/omarchy-personal-repo.pub.asc`) and is fetched from there; or pass `--key <path>`
-   to use a local copy.
-2. **Derive the published pair version from the personal repo's own pacman database** — never
-   hard-coded (see the "no literals" rule in the State table). It reads the newest `omarchy-<version>`
-   directory and takes its version.
-3. **Install `omarchy-<version>` + `omarchy-settings-<version>` together** (lockstep, via the `.sig`
-   verified automatically), so the exact-version dependency between them holds.
-4. **`omarchy refresh pacman`** — writes the fork's `pacman.conf` with `[omarchy-personal]` **before**
-   `[omarchy]` (partial shading).
-5. **`omarchy update`** — full convergence (packages + migrations + hooks).
-6. **`omarchy provision user --force`** — materializes configs, launchers and the lazy first-use stubs
-   into the current user. See "the provision lesson" below — this is the step that fix the "why didn't
-   the launchers appear?" symptom.
-7. **`omarchy reinstall pkgs`** — reconciles the package set.
-8. **Verifies** (`pacman -Q omarchy omarchy-settings`).
+It runs, in order: trust the personal key → derive & install the published pair (lockstep, never a
+hard-coded literal) → `omarchy refresh pacman` → `omarchy update` → `omarchy provision user --force` →
+`omarchy reinstall pkgs` → verify. **These steps, documented by hand, are in
+[`onboarding.md`](../onboarding.md)** — this README covers the script, not the step-by-step guide.
 
 ### The provision lesson (the one thing that isn't obvious)
 
@@ -104,16 +89,10 @@ Use it on **the** machine where you edit the fork. It clones the layout under
 
 ## Getting the script onto a machine
 
-Because it is in the fork, every machine can fetch it from the raw source (and the public key with it):
-
-```bash
-curl -fsSL -o bootstrap-omarchy-machine.sh \
-  https://raw.githubusercontent.com/robert-flo/omarchy/personal/docs/personal/machine-bootstrap/bootstrap-omarchy-machine.sh
-chmod +x bootstrap-omarchy-machine.sh
-./bootstrap-omarchy-machine.sh --child   # or --dev
-```
-
---child will fetch the key itself; use `--key <path>` if you prefer to supply it locally.
+Because it is in the fork, every machine can fetch it from the raw source (and the public key with it).
+The exact `curl` commands and the full walk-through are in the
+[**onboarding.md**](../onboarding.md) → *Automatic with the script* section; this README is the
+reference for the script's flags and behaviour only.
 
 ---
 

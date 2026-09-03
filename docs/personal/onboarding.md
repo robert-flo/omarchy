@@ -9,6 +9,54 @@ You need the personal repository's public key: `keys/omarchy-personal-repo.pub.a
 never leaves the project). The current pair version is read from the **State** table in
 [`README.md`](README.md) — `<CURRENT_PAR>`.
 
+## Choose your path: `child` or `dev`
+
+There are **exactly two** kinds of machine (see the two-scenario model in
+[`SKILL.md`](../../agents/skills/personal-fork/SKILL.md)); decide which this one is before doing
+anything:
+
+| Kind | You run | Delivered by | Maintains itself with |
+|---|---|---|---|
+| **child** | `omarchy update` once, after the ISO | the **published package** (no local source) | `omarchy update` |
+| **dev** | builds from the **local checkout** | the **local** `-dev` pair | refresh commands (**not** `omarchy update`) |
+
+- **child** — every machine except the ones you build on. It only *receives*. This is the default and
+  the reliable one.
+- **dev** — the machine(s) where you edit the fork. It deliberately runs ahead of the published pair.
+
+> **Which route do you want?** [Automatic with the script](#automatic-with-the-script) (one command,
+> recommended) or the [manual steps](#the-steps) (same flow, by hand, for a child).
+
+---
+
+## Automatic with the script
+
+The canonical way is one script, [`bootstrap-omarchy-machine.sh`](machine-bootstrap/bootstrap-omarchy-machine.sh),
+which you fetch from the fork's raw source and run in the mode that matches the machine (`--child` is
+the default; `--dev` builds the local pair). Details, flags and troubleshooting are in
+[`machine-bootstrap/README.md`](machine-bootstrap/README.md).
+
+```bash
+# fetch the script (public key is fetched from the fork automatically)
+curl -fsSL -o bootstrap-omarchy-machine.sh \
+  https://raw.githubusercontent.com/robert-flo/omarchy/personal/docs/personal/machine-bootstrap/bootstrap-omarchy-machine.sh
+chmod +x bootstrap-omarchy-machine.sh
+
+./bootstrap-omarchy-machine.sh --child          # a machine that only receives (default mode)
+./bootstrap-omarchy-machine.sh --dev            # the build machine: clone layout + install -dev pair
+./bootstrap-omarchy-machine.sh --dev --no-install   # dev: clone/layout only, don't build
+```
+
+> **dev machines must NOT run `omarchy update`.** The official repo also publishes a `-dev` pair
+> versioned with git-describe of quattro, and that version beats our local `dev.<sha>` by `vercmp` — so
+> `omarchy update` would "upgrade" to the official dev pair and drop all local work. If that happens,
+> re-run `--dev` (the script detects the mismatch and says so).
+
+If you prefer to understand what the script does instead of trusting it blind, read the manual steps
+below — they are the exact `--child` flow.
+
+---
+
 ## The steps
 
 ```bash
@@ -43,11 +91,9 @@ omarchy reinstall pkgs
 omarchy reinstall-configs
 ```
 
-> The whole `--child` sequence (steps 1–6) is what
-> [`bootstrap-omarchy-machine.sh`](machine-bootstrap/bootstrap-omarchy-machine.sh) automates — it is the
-> script to run on a machine that simply **receives** personalizations, and the reference behaviour is
-> kept in sync there. If you prefer the script, use `--child`; the steps below document the same flow
-> by hand.
+> Steps 1–6 are exactly what `bootstrap-omarchy-machine.sh --child` automates (see
+> [Automatic with the script](#automatic-with-the-script)); the steps below document the same flow by
+> hand for reference.
 
 > **Removed home-launcher bootstrap (PoC) + lazy on-first-use:** the early-stage
 > `omarchy-personal-bootstrap-launchers` PoC has been **removed**; its logic is fully absorbed into
