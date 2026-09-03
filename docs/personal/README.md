@@ -35,15 +35,15 @@ the fork reads the mandatory skill first, then the recipe for the task at hand.
 
 | Item | published | dev machine |
 |---|---|---|
-| `omarchy` + `omarchy-settings` (lockstep pair) | `4.0.2-103` | `4.0.2-103` (converged) |
+| `omarchy` + `omarchy-settings` (lockstep pair) | `4.0.2-104` | `4.0.2-103` (dev; `omarchy update` → `104`) |
 | `hola-mundo` (personal-package PoC) | `0.1.0-2` | `0.1.0-2` |
-| launchers in the menu (dev) | — | `78` |
+| launchers in the menu (dev) | — | `77` |
 
 Placeholders used across this tree (all defined here, no literal in the docs):
 
 | Placeholder | Meaning |
 |---|---|
-| `<CURRENT_PAR>` | Current published/installed `omarchy`+`omarchy-settings` version (e.g. `4.0.2-103`) |
+| `<CURRENT_PAR>` | Current published/installed `omarchy`+`omarchy-settings` version (e.g. `4.0.2-104`) |
 | `<CURRENT_HOLA>` | Current `hola-mundo` PoC version |
 | `<CURRENT_LAUNCHERS>` | Number of launchers in the dev launcher menu |
 | `<UPSTREAM_TAG>` | The upstream `quattro` tag being rebased/pinned (e.g. `v4.0.2`) |
