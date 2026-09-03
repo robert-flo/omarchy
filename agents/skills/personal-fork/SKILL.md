@@ -18,8 +18,10 @@ This skill teaches how to **operate Omarchy's personal fork** (`robert-flo/omarc
 `personal`): where each change goes, how to validate it on the dev machine, and how to deliver it to
 all machines via `omarchy update`, following the upstream pattern with a view to contributing back.
 
-**Reference index:** [`AGENTS.personal.md`](../../../AGENTS.personal.md) (overview + hard rules) and
-[`docs/personal/`](../../../docs/personal/) (detailed recipes).
+**Reference index:** [`AGENTS.personal.md`](../../../AGENTS.personal.md) (overview + hard rules),
+[`docs/personal/`](../../../docs/personal/) (detailed recipes), and
+[`docs/personal/machine-bootstrap/`](../../../docs/personal/machine-bootstrap/) (the two on-boarding
+flows: `--child` / `--dev`).
 
 ---
 
@@ -80,7 +82,7 @@ model — stop and re-ask.
 
 Provisioning writes the idle stubs via a `--stub` mode; the same binaries double as **deliberate**
 commands to install now (no `--stub`): `omarchy install mimo`, `omarchy install opencode desktop`,
-`omarchy install aur <package> <binary>`, `omarchy install openclaw service`. Remember a new
+`omarchy install aur <package> <binary>`, `omarchy install service openclaw`. Remember a new
 `bin/omarchy-install-*` must be made **executable (`chmod +x`) or the resolver will not register it**
 (see `recipes.md` W2).
 
@@ -115,8 +117,15 @@ omarchy update (on each machine) → pacman installs the personal pair → chang
 - New files arrive packaged; materializing them into the `$HOME` of **existing users** requires a
   refresh (dev) or a **migration** (once per machine, automatic). **New** users receive them at
   creation via `/etc/skel`.
+- **`omarchy update` does NOT re-provision an existing user's `$HOME`.** The per-user finalization
+  (`install/user/all.sh` → `launchers.sh` + `mise.sh`) is gated by the `finalize-user` marker and runs
+  once. After an update that ships **new launchers/stubs**, materialize them with
+  **`omarchy provision user --force`** (idempotent; this is what the machine bootstrap runs). Without
+  it, a new launcher appears in the package but not in the menu. (Validated on the first real update,
+  2026-09-02.)
 - **Golden rule:** nothing is installed by a loose per-machine script or a parallel mechanism;
-  everything travels through `omarchy update`.
+  everything travels through `omarchy update`. First-boot convenience is `bootstrap-omarchy-machine.sh`
+  (`docs/personal/machine-bootstrap/`), which only calls the `omarchy …` commands above.
 
 ---
 
