@@ -60,7 +60,9 @@ top of a vanilla Omarchy. Agreed strategy:
 4. **Keep the personal repo ahead of the official mirror** in version (the `pkgrel` rule); otherwise
    `omarchy update` would install the official pair and wipe out personalizations.
 5. **`/etc/skel` only seeds new users.** On machines with existing users, materialize with
-   `omarchy refresh …` / `omarchy reinstall-*` or a migration.
+   `omarchy refresh …` / `omarchy reinstall-*` or a migration. Note: `omarchy update` installs the
+   pair but does **not** re-provision an existing user's `$HOME`; after an update that ships new
+   launchers/stubs, materialize them with **`omarchy provision user --force`** (see ADR-009).
 6. **Never touch `/usr/share/omarchy/` by hand** on any machine; everything that lives there is placed
    by the package.
 7. **Never commit private keys** (private GPG, deploy keys). The repo is public; private material
