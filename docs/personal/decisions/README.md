@@ -16,6 +16,7 @@ format: Context → Decision → Consequences. Each ADR has a status: **Accepted
 | [ADR-006 — GPG keys and deploy key: trust, rotation, DR](ADR-006-keys.md) | Accepted |
 | [ADR-007 — Rolling build environment, not a digest pin](ADR-007-build-environment.md) | Accepted (declared risk) |
 | [ADR-008 — Everything travels via `omarchy update`](ADR-008-architecture.md) | Accepted |
+| [ADR-009 — `omarchy update` does not re-provision user state; `omarchy provision user --force` is the convergence step](ADR-009-provision-user-convergence.md) | Accepted |
 
 ## Known limitations and non-goals (read this first)
 
