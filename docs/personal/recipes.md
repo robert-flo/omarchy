@@ -50,11 +50,16 @@ Versions are read from the **State table** in [`README.md`](README.md) — they 
 1. Create `bin/omarchy-<group>-<verb>` with shebang `#!/bin/bash` and metadata (`# omarchy:summary=`,
    `# omarchy:args=`, etc.). Follow `agents/skills/command-metadata.md` and `AGENTS.md`.
 2. If it is a new group, register it in `GROUP_DESCRIPTIONS` of `bin/omarchy`.
-3. The `omarchy` PKGBUILD captures `bin/*` by glob → **no PKGBUILD change needed**. Rebuild:
+3. **Make it executable — `chmod +x` is mandatory.** The command resolver (`load_group_commands` /
+   `resolve_direct_route` in `bin/omarchy`) only registers *executable* bins (requires `-x`). A file
+   created with `write` (0664) silently fails to register and just does not appear in the menu, even
+   though it exists with correct metadata. (Hit on `omarchy-install-aur` during the 2026-09-02
+   dry-run; the other three installers registered because they had been `chmod +x`.)
+4. The `omarchy` PKGBUILD captures `bin/*` by glob → **no PKGBUILD change needed**. Rebuild:
    `omarchy dev pkg-test omarchy`.
-4. Add a CLI test if appropriate (`test/cli`, `test/shell.d/base-test.sh`); run `./test/all` before
+5. Add a CLI test if appropriate (`test/cli`, `test/shell.d/base-test.sh`); run `./test/all` before
    publishing.
-5. **Validate:** `omarchy <group> <verb> --help`; `pacman -Ql omarchy-dev | grep my-command`.
+6. **Validate:** `omarchy <group> <verb> --help`; `pacman -Ql omarchy-dev | grep my-command`.
 
 ---
 

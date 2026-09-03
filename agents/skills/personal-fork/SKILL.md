@@ -78,6 +78,12 @@ model — stop and re-ask.
 > - All the first-use stubs are provisioned by `install/user/launchers.sh` (registered in `all.sh`).
 > Do not reintroduce a monolithic bootstrap script; extend the rows above instead.
 
+Provisioning writes the idle stubs via a `--stub` mode; the same binaries double as **deliberate**
+commands to install now (no `--stub`): `omarchy install mimo`, `omarchy install opencode desktop`,
+`omarchy install aur <package> <binary>`, `omarchy install openclaw service`. Remember a new
+`bin/omarchy-install-*` must be made **executable (`chmod +x`) or the resolver will not register it**
+(see `recipes.md` W2).
+
 ---
 
 ## The two scenarios (there is no third)

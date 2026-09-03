@@ -37,13 +37,40 @@ omarchy reinstall pkgs
 omarchy reinstall-configs
 ```
 
-> **Removed home-launcher bootstrap (PoC):** the early-stage `omarchy-personal-bootstrap-launchers`
-> PoC has been **removed**; its logic is fully absorbed into canonical rows (system packages →
-> `omarchy-base.packages`; CLIs → `install/user/mise.sh`; heavy/AUR tools → lazy first-use stubs in
-> `install/user/launchers.sh`; openclaw gateway → `omarchy-install-service-openclaw`; Hermes Web shim →
-> `omarchy-install-hermes-cli`; `~/src` → `install/user/mise-work.sh`). Everything travels via
-> `omarchy update` → `omarchy refresh applications`. There is no need to run any bootstrap script on
-> new machines; the launchers install their own tools on first use.
+> **Removed home-launcher bootstrap (PoC) + lazy on-first-use:** the early-stage
+> `omarchy-personal-bootstrap-launchers` PoC has been **removed**; its logic is fully absorbed into
+> canonical rows (system packages → `omarchy-base.packages`; CLIs → `install/user/mise.sh`; heavy/AUR
+> tools → lazy first-use stubs in `install/user/launchers.sh`; openclaw gateway →
+> `omarchy-install-service-openclaw`; Hermes Web shim → `omarchy-install-hermes-cli`; `~/src` →
+> `install/user/mise-work.sh`). Everything travels via `omarchy update` → `omarchy refresh
+> applications`. There is no need to run any bootstrap script on new machines; the launchers install
+> their own tools on first use.
+
+**Lazy on-first-use (the owner's chosen model, like `~/.local/bin/ori`):** tools are never fetched at
+provision time. The pair only writes idle launchers (`~/.local/bin/<cmd>` stubs); the first time you
+actually launch a launcher, its stub installs the tool then runs it. Covers all first-use classes:
+
+- **mise-backed CLIs** (`qwen`, `openclaude`, `zero`, `cmd`, `openclaw`, …) → `omarchy-mise-install`
+  stub in `install/user/mise.sh`.
+- **Heavy official GUI tools** (`mimo`, `opencode-desktop`) → self-contained stubs
+  (`bin/omarchy-install-mimo` / `omarchy-install-opencode-desktop`) that download on first use.
+- **AUR packages** (`microsoft-edge-stable-bin`, `lyricify`, `spicetify-cli`) →
+  `bin/omarchy-install-aur` stub: on first use it runs `omarchy-pkg-aur-add <pkg>` (the canonical AUR
+  wrapper), then `exec /usr/bin/<bin>` by absolute path.
+- **Systemd user services** (`openclaw-gateway`) are the deliberate exception: they are installed with
+  `omarchy install openclaw service`, never from a first-use stub (a daemon should not spring to life
+  from a launcher). Its `ExecStart` is generated per-machine by `openclaw gateway install` because it
+  must point at that machine's mise node runtime path.
+
+> **Validation note (non-destructive dry-run, 2026-09-02):** the onboarding contract was vetted with a
+> non-destructive dry-run on the dev machine (no VM, no reformat). It exercised: command registration
+> (all four `omarchy install …` resolvers), stub writing into a throwaway `$HOME`, a simulated
+> first-use of an AUR stub (it invoked the canonical AUR installer on demand) and the fast-path (no
+> re-download when the tool is already present), and confirmed every `.desktop` `Exec=` binary
+> resolves either via a stub (`mimo`, `opencode-desktop`, `microsoft-edge-stable`, `lyricify`,
+> `spicetify`) or via the mise lazy flow (`openclaw`, `openclaude`, `cmd`, `zero`, `qwen`). To validate
+> the full end-to-end with the published pair, use a VM on the official stable ISO — see
+> [`cadence.md`](cadence.md) / [`recipes.md`](recipes.md) for the publish steps.
 
 ## Verify it worked
 

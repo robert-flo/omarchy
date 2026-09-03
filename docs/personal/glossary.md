@@ -18,6 +18,11 @@ at the upstream terms (`docs/` of the source repo).
 | **gh-pages** | Branch of `omarchy-personal-repo` served as a static web site (the pacman repo files). |
 | **guard §5.3** | Action step that aborts if the personal pair would fall behind official stable. |
 | **fail-fast guard** | Action step that aborts if the workflow was triggered from a branch ≠ `personal`. |
+| **first-use / lazy stub** | An idle launcher in `~/.local/bin/<cmd>` that installs its tool on the first actual launch (like `~/.local/bin/ori`), never at provision time. Covers mise CLIs, heavy GUI tools and AUR pkgs. |
+| **`omarchy-install-aur`** | `omarchy install aur <package> <binary>`. Writes a first-use stub for an AUR package: cold path runs `omarchy-pkg-aur-add <pkg>` then `exec /usr/bin/<bin>` by absolute path; inert once `/usr/bin/<bin>` exists (it shadows the stub on PATH). |
+| **`omarchy-install-mimo`** | `omarchy install mimo [--stub]`. Installs MiMo (official binary) now, or `--stub` writes the lazy `~/.local/bin/mimo` launcher. |
+| **`omarchy-install-opencode-desktop`** | `omarchy install opencode desktop [--stub]`. Installs the OpenCode Desktop AppImage now, or `--stub` writes the lazy launcher. |
+| **`omarchy-install-service-openclaw`** | `omarchy install openclaw service`. Installs + enables the `openclaw-gateway` systemd user service (dashboard `http://127.0.0.1:18789`). The deliberate non-lazy case: a systemd service is never spawned from a launcher stub. Needs the `openclaw` CLI present first. |
 | **keyring / key trust** | `pacman-key --add` + `--lsign-key` of the personal public key on each machine. |
 | **lockstep (pair)** | `omarchy` and `omarchy-settings` are built from the same commit/source and share `pkgver`/`pkgrel`/`_tag`/`_commit`; `omarchy` depends on `omarchy-settings=${pkgver}` exactly. |
 | **Decision Matrix** | The canonical table in `SKILL.md` that decides WHERE each fork change goes (config / web app / command / wrapper / set / migration). |
