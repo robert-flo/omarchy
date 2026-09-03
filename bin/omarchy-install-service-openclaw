@@ -14,7 +14,7 @@
 
 set -euo pipefail
 
-if ! command -v openclaw >/dev/null 2>&1; then
+if omarchy-cmd-missing openclaw; then
   echo "openclaw is not installed. Run the OpenClaw TUI launcher once to install it, then retry." >&2
   exit 1
 fi
