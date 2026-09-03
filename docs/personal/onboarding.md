@@ -30,12 +30,24 @@ omarchy refresh pacman
 # 4) Full update: convergence of packages, migrations and hooks
 omarchy update
 
-# 5) Reconcile the package list with the personal system's
+# 5) Materialize configs, launchers and lazy first-use stubs into THIS user.
+#    `omarchy update` installs the pair but does NOT re-provision an existing user's $HOME
+#    (gated by the finalize-user marker). Run this explicitly: it is what writes the
+#    ~/.local/bin/* stubs and refreshes the launcher menu. Idempotent.
+omarchy provision user --force
+
+# 6) Reconcile the package list with the personal system's
 omarchy reinstall pkgs
 
-# 6) Materialize the personal system's configs onto your user (if a user is already active):
+# 7) Materialize the personal system's configs onto your user (if a user is already active):
 omarchy reinstall-configs
 ```
+
+> The whole `--child` sequence (steps 1–6) is what
+> [`bootstrap-omarchy-machine.sh`](machine-bootstrap/bootstrap-omarchy-machine.sh) automates — it is the
+> script to run on a machine that simply **receives** personalizations, and the reference behaviour is
+> kept in sync there. If you prefer the script, use `--child`; the steps below document the same flow
+> by hand.
 
 > **Removed home-launcher bootstrap (PoC) + lazy on-first-use:** the early-stage
 > `omarchy-personal-bootstrap-launchers` PoC has been **removed**; its logic is fully absorbed into
@@ -58,7 +70,7 @@ actually launch a launcher, its stub installs the tool then runs it. Covers all 
   `bin/omarchy-install-aur` stub: on first use it runs `omarchy-pkg-aur-add <pkg>` (the canonical AUR
   wrapper), then `exec /usr/bin/<bin>` by absolute path.
 - **Systemd user services** (`openclaw-gateway`) are the deliberate exception: they are installed with
-  `omarchy install openclaw service`, never from a first-use stub (a daemon should not spring to life
+  `omarchy install service openclaw`, never from a first-use stub (a daemon should not spring to life
   from a launcher). Its `ExecStart` is generated per-machine by `openclaw gateway install` because it
   must point at that machine's mise node runtime path.
 
@@ -89,7 +101,9 @@ will simply ask for your password and continue. Nothing is broken on the system.
 ## Day-to-day use
 
 - **Maintain:** `omarchy update` (updates packages + AUR + mise; runs migrations and hooks). It
-  updates what is installed; it does **not** install new packages.
+  updates what is installed; it does **not** install new packages. If an update ships **new launchers
+  or first-use stubs**, follow it with `omarchy provision user --force` to materialize them into the
+  current user (update alone does not).
 - **Install a new personal package:** `sudo pacman -S <pkg>` (once; then it maintains itself).
 - **Reconcile the set:** `omarchy reinstall pkgs`.
 - **Re-seed configs (nuclear):** `omarchy reinstall-configs`; finer: `omarchy refresh shell`,
