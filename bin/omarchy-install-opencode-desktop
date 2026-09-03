@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# omarchy:summary=Install OpenCode Desktop as a self-contained first-use AppImage stub in ~/.local/bin
+# omarchy:args=[--stub]
+# omarchy:examples=omarchy install opencode desktop | omarchy install opencode desktop --stub
+
+# OpenCode Desktop is a large AppImage, so it is never downloaded at provision
+# time. `omarchy install opencode desktop` fetches it now; `--stub` (used while
+# provisioning a machine) only writes the ~/.local/bin/opencode-desktop
+# launcher, which downloads the AppImage on first use.
+
+set -euo pipefail
+
+mode=${1:-}
+app="$HOME/.local/opt/opencode-desktop/opencode-desktop.AppImage"
+wrapper="$HOME/.local/bin/opencode-desktop"
+
+# Official Linux x86_64 AppImage release.
+url="https://github.com/anomalyco/opencode/releases/latest/download/opencode-desktop-linux-x86_64.AppImage"
+
+# The line that identifies the wrapper as this installer's.
+marker='# Written by omarchy-install-opencode-desktop.'
+
+install_now() {
+  mkdir -p "$(dirname "$app")"
+  curl -fsSL -o "$app" "$url" || return 1
+  chmod +x "$app"
+}
+
+write_stub() {
+  mkdir -p "$HOME/.local/bin"
+  cat >"$wrapper" <<EOF
+#!/usr/bin/env bash
+# Written by omarchy-install-opencode-desktop. Downloads the AppImage on first use, then runs it.
+APP="$HOME/.local/opt/opencode-desktop/opencode-desktop.AppImage"
+if [[ ! -x "\$APP" ]]; then
+  echo "Downloading OpenCode Desktop on first use..." >&2
+  mkdir -p "\$(dirname "\$APP")"
+  curl -fsSL -o "\$APP" "$url" || exit 1
+  chmod +x "\$APP"
+fi
+if [[ -e /dev/fuse ]]; then exec "\$APP" "\$@"; else exec "\$APP" --appimage-extract-and-run "\$@"; fi
+EOF
+  chmod +x "$wrapper"
+}
+
+if [[ $mode == "--stub" ]]; then
+  write_stub
+  exit 0
+fi
+
+if [[ ! -x "$app" ]]; then
+  echo "Downloading OpenCode Desktop..."
+  install_now
+fi
+write_stub
+
+if [[ -x "$app" ]]; then
+  echo ""
+  echo "OpenCode Desktop installed."
+else
+  echo ""
+  echo "OpenCode Desktop could not be downloaded; the launcher is stubbed and will install on first use." >&2
+  exit 1
+fi

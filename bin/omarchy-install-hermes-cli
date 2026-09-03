@@ -267,6 +267,30 @@ EOF
 
 chmod +x "$HOME/.local/bin/hermes"
 
+# The personal Hermes Web launcher execs the Desktop-owned path
+# ~/.hermes/hermes-agent/venv/bin/hermes, which nothing writes when Hermes owns
+# the CLI install. Hand this code path to the CLI wrapper so the launcher
+# resolves on a CLI-only machine. Only written while the CLI owns Hermes: this
+# branch already returned for Desktop ownership (where that path is Desktop's
+# own real runtime and must never be touched), so this is a leftover-only
+# guard against a stale venv from an owner that has since gone CLI.
+web_venv="$HOME/.hermes/hermes-agent/venv/bin/hermes"
+if [[ -e "$web_venv" && ! -L "$web_venv" ]]; then
+  if ! ([[ -f "$web_venv" ]] && grep -qF "$HOME/.hermes" "$web_venv" && "$web_venv" --version >/dev/null 2>&1); then
+    rm -f "$web_venv"
+  fi
+fi
+if [[ ! -e "$web_venv" ]]; then
+  mkdir -p "$(dirname "$web_venv")"
+  cat >"$web_venv" <<'EOF'
+#!/usr/bin/env bash
+# omarchy-install-hermes-cli: shim for the Hermes Web launcher's Desktop path.
+# Hermes is a CLI install here, so point it at the ~/.local/bin wrapper.
+exec "$HOME/.local/bin/hermes" "$@"
+EOF
+  chmod +x "$web_venv"
+fi
+
 # The desktop app resolves a hermes on PATH by running `hermes --version` with
 # a 15 second budget, then falls back to cloning its own copy when that times
 # out. A first-run mise install does not fit in 15 seconds, so anything that

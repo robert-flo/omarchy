@@ -7,7 +7,7 @@ at the upstream terms (`docs/` of the source repo).
 |---|---|
 | **Action / `release-personal.yml`** | GitHub Actions workflow on `robert-flo/omarchy-pkgs` that builds and publishes the personal pacman repo on GitHub Pages. |
 | **bootstrap** (dev) | Get a machine ready as a dev environment: clones, `omarchy dev pkg-test` and the dev pair installed. |
-| **launcher bootstrap** (PoC) | `bin/omarchy-personal-bootstrap-launchers`; the Stage-2 proof of concept, **deprecated as a living mechanism**; its logic is absorbed by `install/user/*.sh` + `omarchy-mise-install`. |
+| **launcher bootstrap** (removed PoC) | `bin/omarchy-personal-bootstrap-launchers`; the Stage-2 proof of concept, **removed** once its logic was absorbed: system packages → `omarchy-base.packages`; CLIs → `install/user/mise.sh` (`omarchy-mise-install`); heavy/AUR tools → lazy first-use stubs provisioned by `install/user/launchers.sh` (`omarchy-install-mimo`, `omarchy-install-opencode-desktop`, `omarchy-install-aur`); openclaw gateway → `omarchy-install-service-openclaw`; Hermes Web shim → `omarchy-install-hermes-cli`; `~/src` → `install/user/mise-work.sh`. |
 | **cadence / sync** | The routine of keeping the fork up to date with `upstream/quattro` (rebase → re-pin → re-release). |
 | **`clean` / clean-repo** | Pipeline step that prunes old versions of the published repo → there is no "rollback" (roll-forward). |
 | **db / database file** | Pacman repo database (`omarchy.db`; alias `omarchy-personal.db` by section). |

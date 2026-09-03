@@ -79,25 +79,36 @@ omarchy refresh applications
 - **Remove**: delete the two files, commit `personal: remove <app>`, publish and update. On existing
   machines, `omarchy refresh applications` removes the leftover launcher when refreshing.
 
-## State of the launcher bootstrap (deprecated PoC)
+## State of the launcher bootstrap (removed PoC)
 
-Stage 2 harvested 60 new launchers (39 web apps + 19 TUI/custom + 2 Microsoft Edge) + their icons,
-published in the `<CURRENT_PAR>` pair, **operational in dev** (the `<CURRENT_LAUNCHERS>` launchers in
-the menu resolve their bins). To make them operational, a PoC was created,
-`bin/omarchy-personal-bootstrap-launchers` (idempotent), which installs the dependencies the launchers
-run (mise/npm CLIs, official installers, Hermes, `~/src`).
+Stage 2 harvested `<CURRENT_LAUNCHERS>` launchers (web apps + TUI/custom + Microsoft Edge) + their
+icons, published in the `<CURRENT_PAR>` pair, **operational in dev** (the launchers in the menu resolve
+their bins). A PoC, `bin/omarchy-personal-bootstrap-launchers` (idempotent), installed the dependencies
+the launchers run. **That PoC was removed** once its logic was fully absorbed into canonical rows:
 
-> **⚠️ DEPRECATED as a living mechanism.** That PoC is not the right path forward: the correct one is
-> for its logic to live in `install/user/*.sh` + `omarchy-mise-install` (the "Third-party wrapper" row
-> of the Decision Matrix) and to travel to machines via `omarchy update`. The script stays in `bin/`
-> as a **reference/example of integration**, not as an active flow. Do not create new changes through
-> that path.
+- System packages (`ncdu`, `kitty`, `spotify-launcher`) → `install/omarchy-base.packages` (Package set).
+- CLIs (`qwen`, `openclaude`, `zero`, `cmd`, `openclaw`, …) → `omarchy-mise-install` lines in
+  `install/user/mise.sh` **and** `install/user/mise-work.sh`.
+- Heavy official GUI tools (`mimo`, `opencode-desktop`) → self-contained lazy first-use stubs
+  (`bin/omarchy-install-mimo`, `bin/omarchy-install-opencode-desktop`).
+- AUR packages (`microsoft-edge-stable-bin`, `lyricify`, `spicetify-cli`) → lazy first-use stubs
+  (`bin/omarchy-install-aur`).
+- OpenClaw gateway service → `bin/omarchy-install-service-openclaw`.
+- Hermes Web venv shim → `bin/omarchy-install-hermes-cli`.
+- `~/src` → `install/user/mise-work.sh`.
+
+All the first-use stubs are provisioned by `install/user/launchers.sh` and travel to machines via
+`omarchy update` → `omarchy refresh applications`. Do not reintroduce a monolithic bootstrap script.
 
 ### How the correct pattern works (third-party wrapper)
 
-`omarchy refresh applications` → `install/user/mise.sh` → `omarchy-mise-install <package> <cmd>`
-writes an idempotent stub in `~/.local/bin/<cmd>` (MISE_MINIMUM_RELEASE_AGE=0, `mise use -g` +
-`exec mise x`). Live examples in the fork: `agy`, `opencode`, `omp`, `grok`, `gh`, `hey`, `ori`,
-`ghui`, `hunk`, `codex`, `claude`, `playwright`, `pi`, + `omarchy-install-hermes-cli || true`. See
-[`recipes.md`](recipes.md) (Third-party wrapper row) and
+`omarchy refresh applications` → `install/user/mise.sh` + `install/user/launchers.sh`:
+- `omarchy-mise-install <package> <cmd>` writes an idempotent stub in `~/.local/bin/<cmd>`
+  (MISE_MINIMUM_RELEASE_AGE=0, `mise use -g` + `exec mise x`) that installs the tool **on first use**.
+- `omarchy-install-mimo` / `omarchy-install-opencode-desktop` / `omarchy-install-aur` write lazy
+  first-use stubs that install their tool on first launch, never in provisioning.
+
+Live mise examples in the fork: `agy`, `opencode`, `omp`, `grok`, `gh`, `hey`, `ori`, `qwen`,
+`openclaude`, `cmd`, `zero`, `openclaw`, `ghui`, `hunk`, `codex`, `claude`, `playwright`, `pi`, +
+`omarchy-install-hermes-cli || true`. See [`recipes.md`](recipes.md) (Third-party wrapper row) and
 [`configs-and-migrations.md`](configs-and-migrations.md).

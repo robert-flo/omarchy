@@ -60,11 +60,23 @@ model — stop and re-ask.
 | **Package set** | `install/omarchy-base.packages` / `omarchy-other.packages` | installed by pacman (ISO / `reinstall pkgs`) | `omarchy-settings` | `omarchy reinstall pkgs` | `omarchy update` |
 | **Provisioning / migration** | `install/` + `migrations/*.sh` | `/usr/share/omarchy/` | `omarchy` | `omarchy dev pkg-test` (+ run it) | `omarchy update` (migrations only) |
 
-> **Deprecated POC — `omarchy-personal-bootstrap-launchers`:** it is **DEPRECATED as a living
-> mechanism** (it was the Stage-2 proof of concept). Its logic is absorbed by the **"Third-party
-> wrapper"** row (`install/user/*.sh` + `omarchy-mise-install`). The script remains in `bin/` only as
-> a reference/example of integration, not as an active flow. Do not create new changes through that
-> path.
+> **Removed POC — `omarchy-personal-bootstrap-launchers`:** the Stage-2 proof of concept was
+> **removed** once its logic was fully absorbed into canonical rows. Everylauncher dependency it once
+> installed now lives in a canonical home:
+> - System packages (`ncdu`, `kitty`, `spotify-launcher`) → `install/omarchy-base.packages`
+>   ("Package set" row).
+> - CLIs (`qwen`, `openclaude`, `zero`, `cmd`, `openclaw`, …) → `omarchy-mise-install` lines in
+>   `install/user/mise.sh` (lazy, installed on first use, like `ori`).
+> - Heavy official GUI tools (`mimo`, `opencode-desktop`) → self-contained lazy first-use stubs via
+>   `bin/omarchy-install-mimo` / `bin/omarchy-install-opencode-desktop`.
+> - AUR packages (`microsoft-edge-stable-bin`, `lyricify`, `spicetify-cli`) → lazy first-use stubs via
+>   `bin/omarchy-install-aur` (`omarchy install aur <pkg> <bin>`), installed on first use like `ori`,
+>   not in provisioning.
+> - The OpenClaw CLI is lazy via `mise.sh`; its gateway service → `bin/omarchy-install-service-openclaw`.
+> - The Hermes Web venv shim → absorbed into `bin/omarchy-install-hermes-cli`.
+> - `~/src` → `install/user/mise-work.sh`.
+> - All the first-use stubs are provisioned by `install/user/launchers.sh` (registered in `all.sh`).
+> Do not reintroduce a monolithic bootstrap script; extend the rows above instead.
 
 ---
 

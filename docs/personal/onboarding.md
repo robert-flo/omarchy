@@ -37,11 +37,13 @@ omarchy reinstall pkgs
 omarchy reinstall-configs
 ```
 
-> **Deprecated home-launcher bootstrap (PoC):** if a machine inherited the early-stage
-> `omarchy-personal-bootstrap-launchers` PoC, its logic has already been absorbed into the
-> "Third-party wrapper" row of the Decision Matrix (`install/user/*.sh` + `omarchy-mise-install`) and
-> travels via `omarchy update` → `omarchy refresh applications`. There is no need to run the PoC on new
-> machines.
+> **Removed home-launcher bootstrap (PoC):** the early-stage `omarchy-personal-bootstrap-launchers`
+> PoC has been **removed**; its logic is fully absorbed into canonical rows (system packages →
+> `omarchy-base.packages`; CLIs → `install/user/mise.sh`; heavy/AUR tools → lazy first-use stubs in
+> `install/user/launchers.sh`; openclaw gateway → `omarchy-install-service-openclaw`; Hermes Web shim →
+> `omarchy-install-hermes-cli`; `~/src` → `install/user/mise-work.sh`). Everything travels via
+> `omarchy update` → `omarchy refresh applications`. There is no need to run any bootstrap script on
+> new machines; the launchers install their own tools on first use.
 
 ## Verify it worked
 

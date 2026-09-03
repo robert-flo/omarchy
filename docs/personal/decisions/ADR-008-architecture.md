@@ -19,9 +19,12 @@ executables/configs) was evaluated and rejected.
   where, in which package, how to validate, and how it reaches machines.
 - Two and only two scenarios: **DEV** (`omarchy dev pkg-test` + refresh; leaves the machine on
   `-dev`) and **MACHINES** (`omarchy update`, the sole distribution trigger).
-- **`omarchy-personal-bootstrap-launchers` is DEPRECATED as a living mechanism**; its logic is
-  absorbed by `install/user/*.sh` + `omarchy-mise-install` (the "Third-party wrapper" row). The PoC is
-  kept temporarily as a reference/example of integration.
+- **`omarchy-personal-bootstrap-launchers` was REMOVED**; its logic is absorbed into canonical rows:
+  system packages → `install/omarchy-base.packages`; CLIs → `install/user/mise.sh`
+  (`omarchy-mise-install`); heavy/AUR tools → lazy first-use stubs provisioned by
+  `install/user/launchers.sh` (`omarchy-install-mimo`, `omarchy-install-opencode-desktop`,
+  `omarchy-install-aur`); openclaw gateway → `omarchy-install-service-openclaw`; Hermes Web shim →
+  `omarchy-install-hermes-cli`; `~/src` → `install/user/mise-work.sh`.
 - **The omarchy plugin approach is rejected** for executables/configs: the plugin system
   (`~/.config/omarchy/plugins/`) is ONLY for Quickshell shell widgets.
 

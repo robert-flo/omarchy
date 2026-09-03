@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# omarchy:summary=Write a lazy first-use stub for an AUR package, installed on demand like the mise wrappers
+# omarchy:args=<package> <binary>
+# omarchy:examples=omarchy install aur microsoft-edge-stable-bin microsoft-edge-stable
+
+# AUR packages install a binary into /usr/bin, which shadows ~/.local/bin on
+# PATH (usr/bin comes first), so a plain wrapper would never run once installed.
+# Purpose of this stub is therefore only the cold path: when the package is not
+# installed there is no /usr/bin/<binary>, the ~/.local/bin/<binary> stub wins,
+# installs the AUR package on first use via omarchy-pkg-aur-add, then execs the
+# real binary by absolute path. Once installed, /usr/bin/<binary> wins and the
+# stub goes inert. This keeps long/interactive AUR builds out of silent
+# provisioning, the same lazy philosophy as the mise-backed wrappers.
+
+set -euo pipefail
+
+package=${1-}
+binary=${2-}
+
+if [[ -z $package || -z $binary ]]; then
+  echo "Usage: omarchy-install-aur <package> <binary>" >&2
+  exit 1
+fi
+
+wrapper="$HOME/.local/bin/$binary"
+marker='# Written by omarchy-install-aur.'
+
+mkdir -p "$HOME/.local/bin"
+cat >"$wrapper" <<EOF
+#!/usr/bin/env bash
+# $marker
+# Installs the $package AUR package on first use, then runs it.
+if ! pacman -Q "$package" >/dev/null 2>&1; then
+  echo "Installing $package on first use..." >&2
+  omarchy-pkg-aur-add "$package" || exit 1
+fi
+exec /usr/bin/$binary "\$@"
+EOF
+chmod +x "$wrapper"

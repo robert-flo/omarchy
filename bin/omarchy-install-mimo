@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# omarchy:summary=Install MiMo (official binary) with a self-contained first-use stub in ~/.local/bin
+# omarchy:args=[--stub]
+# omarchy:examples=omarchy install mimo | omarchy install mimo --stub
+
+# MiMo is a large proprietary binary with its own official installer, so it is
+# never fetched at provision time. When `omarchy install mimo` runs it downloads
+# and installs it now; `--stub` (used while provisioning a machine) only writes
+# the ~/.local/bin/mimo launcher, which installs MiMo itself on first use --
+# the same lazy arrangement as the mise-backed CLIs.
+
+set -euo pipefail
+
+mode=${1:-}
+target="$HOME/.mimocode/bin/mimo"
+wrapper="$HOME/.local/bin/mimo"
+
+# The line that identifies the wrapper as this installer's.
+marker='# Written by omarchy-install-mimo.'
+
+# Official installer, mirroring what the launcher's first-use stub will run.
+install_now() {
+  curl -fsSL https://mimo.xiaomi.com/install | bash
+}
+
+write_stub() {
+  mkdir -p "$HOME/.local/bin"
+  cat >"$wrapper" <<EOF
+#!/usr/bin/env bash
+# Written by omarchy-install-mimo. Installs MiMo on first use, then runs it.
+if [[ ! -x "$HOME/.mimocode/bin/mimo" ]]; then
+  echo "Installing MiMo on first use..." >&2
+  curl -fsSL https://mimo.xiaomi.com/install | bash || exit 1
+fi
+exec "$HOME/.mimocode/bin/mimo" "\$@"
+EOF
+  chmod +x "$wrapper"
+}
+
+if [[ $mode == "--stub" ]]; then
+  write_stub
+  exit 0
+fi
+
+if [[ ! -x "$target" ]]; then
+  echo "Installing MiMo..."
+  install_now
+fi
+write_stub
+
+if [[ -x "$target" ]]; then
+  echo ""
+  echo "MiMo installed."
+else
+  echo ""
+  echo "MiMo could not be fetched; the launcher is stubbed and will install on first use." >&2
+  exit 1
+fi

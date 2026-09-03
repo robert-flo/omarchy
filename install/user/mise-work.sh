@@ -2,6 +2,9 @@
 mkdir -p "$HOME/Work"
 mkdir -p "$HOME/Work/tries"
 
+# Working directory the personal launchers cd into (Exec=sh -c "cd \"\$HOME/src\" ...").
+mkdir -p "$HOME/src"
+
 cat >"$HOME/Work/.mise.toml" <<'EOF'
 [env]
 _.path = "{{ cwd }}/bin"
