@@ -29,7 +29,7 @@ marker='# Written by omarchy-install-aur.'
 mkdir -p "$HOME/.local/bin"
 cat >"$wrapper" <<EOF
 #!/usr/bin/env bash
-# $marker
+$marker
 # Installs the $package AUR package on first use, then runs it.
 if ! pacman -Q "$package" >/dev/null 2>&1; then
   echo "Installing $package on first use..." >&2
