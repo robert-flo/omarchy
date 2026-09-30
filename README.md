@@ -36,8 +36,8 @@ graph TD
     Dev -->|1. push personal| R_Source
     R_Source -->|2. triggers release-personal Action| R_Pkgs
     R_Pkgs -->|3. builds, GPG signs & publishes| R_Pacman
-    R_Pacman -->|4. pacman resolves [omarchy-personal]| Consumer
-    R_Pacman -->|4. pacman resolves [omarchy-personal]| Dev
+    R_Pacman -->|4. pacman resolves omarchy-personal| Consumer
+    R_Pacman -->|4. pacman resolves omarchy-personal| Dev
     R_Docs -.->|architectural guidelines| Dev
 ```
 
