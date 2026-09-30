@@ -4,6 +4,21 @@ This document tracks all custom changes, features, and fixes applied specificall
 
 Because upstream (`omacom/omarchy`) receives frequent commits and releases, this log serves as the authoritative record of personal customizations maintained on top of upstream, making it easy to audit differences without inspecting upstream git history.
 
+## [2026-09-30]
+
+### Key Rotation & v4.0.4-99 Release Alignment
+
+- **Author:** Roberto Flores (`25asab015@ujmd.edu.sv`)
+- **Resolved Issues:** `robert-flo/omarchy-pkgs#3`, `robert-flo/omarchy-pkgs#4`
+
+#### What was changed:
+1. **`keys/omarchy-personal-repo.pub.asc`**:
+   - Rotated personal package signing key to dedicated 4096-bit RSA key `CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4` (`76AFFCC217DB9FC4`) following ADR-006 DR procedure.
+2. **`default/pacman/pacman-stable.conf`**:
+   - Updated documentation comment to reference new key fingerprint `CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4`.
+3. **`README.md`**:
+   - Updated consumer machine onboarding instructions with the new GPG key ID and target binary packages (`omarchy-4.0.4-99` and `omarchy-settings-4.0.4-99`).
+
 ---
 
 ## [2026-09-29]
