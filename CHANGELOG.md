@@ -19,6 +19,18 @@ Because upstream (`omacom/omarchy`) receives frequent commits and releases, this
 3. **`README.md`**:
    - Updated consumer machine onboarding instructions with the new GPG key ID and target binary packages (`omarchy-4.0.4-99` and `omarchy-settings-4.0.4-99`).
 
+### Upstream Fast-Forward & Personal Rebase Workflow
+
+- **Author:** Roberto Flores (`25asab015@ujmd.edu.sv`)
+- **Resolved Issues:** [`robert-flo/omarchy#1`](https://github.com/robert-flo/omarchy/issues/1)
+
+#### What was changed:
+1. **`.github/workflows/sync-upstream.yml`**:
+   - Added standalone `workflow_dispatch` workflow for automated or manual Fast-Forward of `quattro` from `omacom/omarchy:quattro` and clean rebase of `personal`.
+   - Incorporates automated conflict detection and GitHub Issue creation with manual resolution instructions upon collision.
+2. **Deploy Key Authentication:**
+   - Authorized deploy key `omarchy-source-sync` with write permissions to support automated push operations from the CI/CD pipeline.
+
 ---
 
 ## [2026-09-29]
