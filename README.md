@@ -48,7 +48,7 @@ graph TD
 | [**`robert-flo/omarchy`**](https://github.com/robert-flo/omarchy) | `personal` | **Fork Source Code:** Contains all custom configurations (`config/`), webapps (`applications/`), scripts (`bin/`), and package lists. Rebased continuously on top of `quattro`. |
 | [**`robert-flo/omarchy`**](https://github.com/robert-flo/omarchy) | `quattro` | **Upstream Mirror:** 100% clean mirror of official `omacom/omarchy:quattro`. Serves as the immutable baseline for rebases and official upstream Pull Requests. |
 | [**`robert-flo/omarchy-pkgs`**](https://github.com/robert-flo/omarchy-pkgs) | `personal` / `master` | **Packaging Engine & CI:** Houses the PKGBUILD recipes for the personal pair (`omarchy` & `omarchy-settings`), Docker build environment, and GitHub Actions automation ([`release-personal.yml`](https://github.com/robert-flo/omarchy-pkgs/blob/personal/.github/workflows/release-personal.yml)). |
-| [**`robert-flo/omarchy-personal-repo`**](https://github.com/robert-flo/omarchy-personal-repo) | `gh-pages` | **Pacman Binary Repository:** Hosted on GitHub Pages. Serves the pacman package databases (`omarchy-personal.db`, `.sig`, `.files`) and binary packages signed by GPG key `D5E75EAC51A44715`. |
+| [**`robert-flo/omarchy-personal-repo`**](https://github.com/robert-flo/omarchy-personal-repo) | `gh-pages` | **Pacman Binary Repository:** Hosted on GitHub Pages. Serves the pacman package databases (`omarchy-personal.db`, `.sig`, `.files`) and binary packages signed by GPG key `CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4`. |
 | [**`robert-flo/scratchpad`**](https://github.com/robert-flo/scratchpad) | `main` | **Canonical Knowledge Base:** The single source of truth for architectural specifications ([`ARCHITECTURE.md`](https://github.com/robert-flo/scratchpad/blob/main/ARCHITECTURE.md)), the Master Plan ([`agents_fork.md`](https://github.com/robert-flo/scratchpad/blob/main/agents_fork.md)), operational recovery ([`RUNBOOK.md`](https://github.com/robert-flo/scratchpad/blob/main/RUNBOOK.md)), and ADRs. |
 
 ---
@@ -107,7 +107,7 @@ Every computer in your setup operates in one of two clearly defined roles:
 3. **Publish to the fleet:**
    When your changes are tested and ready:
    - Commit and push to `personal` using the strict branch workflow.
-   - GitHub Actions ([`release-personal.yml`](https://github.com/robert-flo/omarchy-pkgs/blob/personal/.github/workflows/release-personal.yml)) automatically compiles the packages inside an Arch container, signs them with GPG key `D5E75EAC51A44715`, and publishes them to [`omarchy-personal-repo`](https://github.com/robert-flo/omarchy-personal-repo).
+   - GitHub Actions ([`release-personal.yml`](https://github.com/robert-flo/omarchy-pkgs/blob/personal/.github/workflows/release-personal.yml)) automatically compiles the packages inside an Arch container, signs them with GPG key `CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4`, and publishes them to [`omarchy-personal-repo`](https://github.com/robert-flo/omarchy-personal-repo).
 
 ---
 
@@ -119,14 +119,14 @@ A daughter machine is installed from the **standard official Omarchy ISO**. You 
 1. **Trust your personal GPG key (One-time setup):**
    ```bash
    curl -fsSL https://raw.githubusercontent.com/robert-flo/scratchpad/main/keys/omarchy-personal-repo.pub.asc | sudo pacman-key --add -
-   sudo pacman-key --lsign-key D5E75EAC51A44715
+   sudo pacman-key --lsign-key CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4
    ```
 2. **Install the initial personal package pair:**
    ```bash
    # Download and install the current personal package pair from your repository
    sudo pacman -U \
-     https://robert-flo.github.io/omarchy-personal-repo/stable/x86_64/omarchy-4.0.2-104-any.pkg.tar.zst \
-     https://robert-flo.github.io/omarchy-personal-repo/stable/x86_64/omarchy-settings-4.0.2-104-any.pkg.tar.zst
+     https://robert-flo.github.io/omarchy-personal-repo/stable/x86_64/omarchy-4.0.4-99-any.pkg.tar.zst \
+     https://robert-flo.github.io/omarchy-personal-repo/stable/x86_64/omarchy-settings-4.0.4-99-any.pkg.tar.zst
    ```
 3. **Configure pacman shadowing & converge:**
    ```bash
