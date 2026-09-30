@@ -25,7 +25,7 @@ graph TD
         R_Source["robert-flo/omarchy<br/>• personal (custom fork source)<br/>• quattro (upstream clean mirror)"]
         R_Pkgs["robert-flo/omarchy-pkgs<br/>• personal (packaging recipes)<br/>• master (upstream packaging mirror)"]
         R_Pacman["robert-flo/omarchy-personal-repo<br/>• gh-pages (binary pacman repository)"]
-        R_Docs["robert-flo/scratchpad<br/>• main (canonical architecture & runbooks)"]
+        R_Docs["robert-flo/fork-docs<br/>• main (canonical documentation portal)"]
     end
 
     subgraph Roles ["Machine Personas"]
@@ -49,7 +49,7 @@ graph TD
 | [**`robert-flo/omarchy`**](https://github.com/robert-flo/omarchy) | `quattro` | **Upstream Mirror:** 100% clean mirror of official `omacom/omarchy:quattro`. Serves as the immutable baseline for rebases and official upstream Pull Requests. |
 | [**`robert-flo/omarchy-pkgs`**](https://github.com/robert-flo/omarchy-pkgs) | `personal` / `master` | **Packaging Engine & CI:** Houses the PKGBUILD recipes for the personal pair (`omarchy` & `omarchy-settings`), Docker build environment, and GitHub Actions automation ([`release-personal.yml`](https://github.com/robert-flo/omarchy-pkgs/blob/personal/.github/workflows/release-personal.yml)). |
 | [**`robert-flo/omarchy-personal-repo`**](https://github.com/robert-flo/omarchy-personal-repo) | `gh-pages` | **Pacman Binary Repository:** Hosted on GitHub Pages. Serves the pacman package databases (`omarchy-personal.db`, `.sig`, `.files`) and binary packages signed by GPG key `CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4`. |
-| [**`robert-flo/scratchpad`**](https://github.com/robert-flo/scratchpad) | `main` | **Canonical Knowledge Base:** The single source of truth for architectural specifications ([`ARCHITECTURE.md`](https://github.com/robert-flo/scratchpad/blob/main/ARCHITECTURE.md)), the Master Plan ([`agents_fork.md`](https://github.com/robert-flo/scratchpad/blob/main/agents_fork.md)), operational recovery ([`RUNBOOK.md`](https://github.com/robert-flo/scratchpad/blob/main/RUNBOOK.md)), and ADRs. |
+| [**`robert-flo/fork-docs`**](https://github.com/robert-flo/fork-docs) | `main` | **Canonical Documentation Portal:** The golden standard ("Estándar de Oro") and single source of truth. Live site at [https://robert-flo.github.io/fork-docs/](https://robert-flo.github.io/fork-docs/) containing the User Guide, Architecture & Decision Matrix, Operations, all 9 ADRs, and historical reference. |
 
 ---
 
@@ -96,7 +96,7 @@ Every computer in your setup operates in one of two clearly defined roles:
 ### Option A: Setting Up a Dev Machine (The Factory)
 *Use this role on the primary computer where you write code, customize configs, and develop the fork.*
 
-1. **Clone the repositories:** Clone [`robert-flo/omarchy`](https://github.com/robert-flo/omarchy) (checkout `personal`) and [`robert-flo/scratchpad`](https://github.com/robert-flo/scratchpad).
+1. **Clone the repositories:** Clone [`robert-flo/omarchy`](https://github.com/robert-flo/omarchy) (checkout `personal`) and [`robert-flo/fork-docs`](https://github.com/robert-flo/fork-docs).
 2. **Iterate locally (Fast Dev Loop):**
    ```bash
    # Make a change in applications/, config/, bin/, etc.
@@ -118,7 +118,7 @@ A daughter machine is installed from the **standard official Omarchy ISO**. You 
 
 1. **Trust your personal GPG key (One-time setup):**
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/robert-flo/scratchpad/main/keys/omarchy-personal-repo.pub.asc | sudo pacman-key --add -
+   curl -fsSL https://raw.githubusercontent.com/robert-flo/fork-docs/main/keys/omarchy-personal-repo.pub.asc | sudo pacman-key --add -
    sudo pacman-key --lsign-key CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4
    ```
 2. **Install the initial personal package pair:**
@@ -163,7 +163,7 @@ To maintain architectural integrity across all repositories, human developers an
   ```
 
 ### 2. The Decision Matrix
-Before placing or moving any file in the fork, consult the **Decision Matrix** in [`robert-flo-scratchpad/ARCHITECTURE.md`](https://github.com/robert-flo/scratchpad/blob/main/ARCHITECTURE.md) (§2). Every customization must be categorized into its authoritative destination:
+Before placing or moving any file in the fork, consult the **Decision Matrix** in [`fork-docs/architecture/02-matriz-de-decision.md`](https://robert-flo.github.io/fork-docs/architecture/02-matriz-de-decision). Every customization must be categorized into its authoritative destination:
 - **User configurations:** `config/<app>/` (installed to `~/.config/<app>/` via `omarchy-settings`).
 - **Webapps & Launchers:** `applications/*.desktop` (installed to `~/.local/share/applications/`).
 - **System executables:** `bin/omarchy-*` (installed to `/usr/bin/` via `omarchy`).
