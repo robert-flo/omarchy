@@ -1,0 +1,22 @@
+name: Sync personal fork
+
+# Fast-forward the local mirror branch `upstream` from omacom/omarchy:quattro
+# (Omarchy's real upstream line), then rebase `personal` onto that mirror.
+
+on:
+  schedule:
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  sync:
+    uses: robert-flo/fleet/.github/workflows/sync-personal-fork.yml@main
+    with:
+      upstream_repo: omacom/omarchy
+      upstream_branch: quattro
+    secrets:
+      token: ${{ secrets.FORK_SYNC_PAT }}
