@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=OpenClaude TUI
+Exec=xdg-terminal-exec --app-id=TUI.tile -e openclaude
+Terminal=false
+Icon=claude-ai

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Gitkraken dev
+Exec=omarchy-launch-webapp "https://gitkraken.dev/launchpad/personal?prs=github&issues=github"
+Terminal=false
+Type=Application
+Icon=gitkraken-dev
+StartupNotify=true

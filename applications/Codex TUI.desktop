@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Codex TUI
+Comment=Codex CLI — AI coding agent (bypass approvals)
+Exec=sh -c "exec xdg-terminal-exec --app-id=TUI.tile -e codex --dangerously-bypass-approvals-and-sandbox"
+Terminal=false
+Icon=chatgpt
+Categories=ConsoleOnly;Utility;
+Keywords=tui;terminal;cli;codex;ai;
