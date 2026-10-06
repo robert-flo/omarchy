@@ -12,3 +12,12 @@ source "$OMARCHY_PATH/default/bash/rc"
 #
 # Make an alias for invoking commands you use constantly
 # alias p='python'
+alias agy="$HOME/.local/bin/agy"
+
+
+
+# --- ANDROID & JAVA ENVIRONMENT ---
+export ANDROID_HOME="$HOME/Android/Sdk"
+export ANDROID_USER_HOME="$HOME/.android"
+export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin"
+# --- FIN ANDROID & JAVA ENVIRONMENT ---
