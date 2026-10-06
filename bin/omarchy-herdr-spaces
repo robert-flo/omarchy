@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# omarchy:summary=Ensure the personal herdr spaces exist with their agy, elio, and nvim tabs
+
+# Spaces and tabs are runtime state, not config.toml settings: herdr restores the
+# last layout from session.json on restart, so this script only fills in what is
+# missing and is safe to rerun after adding a space or on a new machine.
+
+TABS=(agy elio nvim)
+
+SPACES=(
+  fo-omarchy-in-omarchy
+  fo-quickshell
+  pj-fleet
+  pj-funeraria-website
+  pj-omarchy
+  pj-paolino
+  rf-learn-astro
+  rf-learn-rust
+  rf-omarchy-bluesky-theme
+  rf-pstack
+  rf-reel
+  rf-Template
+  rf-try-clone
+  rf-x-bookmarks
+)
+
+command -v herdr >/dev/null || exit 0
+command -v jq >/dev/null || exit 0
+
+# The CLI talks to the running server; start it headless if nothing is running yet.
+if [[ $(herdr status server --json 2>/dev/null | jq -r '.running') != "true" ]]; then
+  nohup herdr server >/dev/null 2>&1 &
+  for _ in {1..10}; do
+    [[ $(herdr status server --json 2>/dev/null | jq -r '.running') == "true" ]] && break
+    sleep 1
+  done
+fi
+[[ $(herdr status server --json 2>/dev/null | jq -r '.running') == "true" ]] || exit 1
+
+list_json=$(herdr workspace list --json 2>/dev/null)
+ws_labels=$(jq -r '.result[]?.label // .[]?.label // empty' <<<"$list_json")
+
+for space in "${SPACES[@]}"; do
+  if grep -qxF "$space" <<<"$ws_labels"; then
+    wsid=$(jq -r --arg l "$space" \
+      '[.result[]? // .[]?] | map(select((.label // "") == $l)) | (.[0].workspace_id // .[0].id) // empty' \
+      <<<"$list_json")
+    tab_labels=$(herdr tab list --workspace "$wsid" 2>/dev/null | jq -r '.result[]?.label // .[]?.label // empty')
+  else
+    resp=$(herdr workspace create --label "$space" --no-focus)
+    wsid=$(jq -r '.result.workspace.workspace_id' <<<"$resp")
+    tab0=$(jq -r '.result.tab.tab_id' <<<"$resp")
+    tab_labels=""
+    if [[ "$tab0" != "null" ]]; then
+      herdr tab rename "$tab0" "${TABS[0]}" >/dev/null
+      tab_labels="${TABS[0]}"
+    fi
+  fi
+  for tab in "${TABS[@]}"; do
+    grep -qxF "$tab" <<<"$tab_labels" || herdr tab create --workspace "$wsid" --label "$tab" --no-focus >/dev/null
+  done
+done
