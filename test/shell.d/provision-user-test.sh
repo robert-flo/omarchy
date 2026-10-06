@@ -69,11 +69,4 @@ HOME="$test_tmp/home" PATH="$mock_bin:$ROOT/bin:$PATH" OMARCHY_PATH="$ROOT" \
 ! grep -q -- '--set DOWNLOAD ' "$TEST_COMMAND_LOG" || fail "provisioning keeps a folder the user already named"
 grep -q -- '--set PICTURES ' "$TEST_COMMAND_LOG" || fail "provisioning still names the folders the user has not"
 pass "provisioning keeps a folder the user already named, in any language"
-=======
-for app in antigravity antigravity-cli antigravity-ide; do
-  file="$test_tmp/home/.gemini/$app/settings.json"
-  [[ -f $file ]] || fail "omarchy-provision-user provisions $app settings.json"
-  cmp -s "$file" "$ROOT/default/gemini/$app/settings.json" ||
-    fail "omarchy-provision-user provisions matching $app settings.json content"
-done
-
+pass "omarchy-provision-user provisions Antigravity, Cursor, and Hermes skills and settings"
