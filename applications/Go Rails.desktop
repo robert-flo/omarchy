@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Go Rails
+Exec=omarchy-launch-webapp "https://gorails.com/"
+Terminal=false
+Type=Application
+Icon=go-rails
+StartupNotify=true

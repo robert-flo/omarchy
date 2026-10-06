@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Qwen AI
+Exec=omarchy-launch-webapp "https://chat.qwen.ai/"
+Terminal=false
+Type=Application
+Icon=qwen-ai
+StartupNotify=true

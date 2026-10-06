@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=oh my pi · the harness
+Comment=omp Terminal UI Agent
+Exec=sh -c "cd \"\$HOME/src\" && exec xdg-terminal-exec --app-id=TUI.tile -e omp"
+Terminal=false
+Icon=omp
+Categories=ConsoleOnly;Utility;
+Keywords=tui;terminal;cli;
