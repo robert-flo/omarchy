@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=M365 Copilot AI
+Exec=omarchy-launch-webapp "https://m365.cloud.microsoft/chat/"
+Terminal=false
+Type=Application
+Icon=m365-copilot-ai
+StartupNotify=true
