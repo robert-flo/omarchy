@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Canva AI
+Exec=omarchy-launch-webapp "https://www.canva.com/?success=true&continue_in_browser=true"
+Terminal=false
+Type=Application
+Icon=canva-ai
+StartupNotify=true
