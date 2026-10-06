@@ -9,6 +9,32 @@ copy_boundary_file bin/omarchy-refresh-pacman
 # Replace the step symlink, preserving the real fixture dispatcher.
 rm "$SUDO_TEST_ROOT/bin/omarchy-update-aur-pkgs"
 copy_boundary_file bin/omarchy-update-aur-pkgs
+rm "$SUDO_TEST_ROOT/bin/omarchy-pkg-sync"
+cat >"$SUDO_TEST_ROOT/bin/omarchy-pkg-sync" <<'STUB'
+#!/bin/bash
+set -euo pipefail
+printf 'step:%s %s\n' "${0##*/}" "$*" >>"$SUDO_TEST_LOG"
+case "$1" in
+  --repos)
+    [[ -e $SUDO_TEST_CACHE ]] || exit 94
+    [[ $(command -v sudo) != "$OMARCHY_PATH/default/omarchy/sudo-no-update/sudo" ]] || exit 95
+    [[ ${OMARCHY_SUDO_NO_UPDATE:-0} != "1" ]] || exit 96
+    ;;
+  --aur)
+    [[ ! -e $SUDO_TEST_CACHE ]] || exit 91
+    [[ $(command -v sudo) == "$OMARCHY_PATH/default/omarchy/sudo-no-update/sudo" ]] || exit 95
+    [[ ${OMARCHY_SUDO_NO_UPDATE:-0} == "1" ]] || exit 96
+    ;;
+  *)
+    exit 97
+    ;;
+esac
+if [[ ${SUDO_TEST_FAIL_STEP:-} == "omarchy-pkg-sync" ]]; then
+  touch "$SUDO_TEST_CACHE"
+  exit 17
+fi
+STUB
+chmod +x "$SUDO_TEST_ROOT/bin/omarchy-pkg-sync"
 export OMARCHY_UPDATE_LOGGED=1
 
 run_update() {
@@ -32,20 +58,24 @@ auth=s.index('sudo /usr/bin/true')
 assert auth < prune, s
 assert [l for l in s[:prune] if l.startswith('sudo ') and l not in ('sudo -k','sudo -h')]==['sudo /usr/bin/true'], s
 assert 'sudo -v' not in s, s
-positions=[next(i for i,line in enumerate(s) if line.startswith(prefix)) for prefix in ['step:omarchy-update-system-pkgs','step:omarchy-migrate','step:omarchy-update-restart --services-only','step:omarchy-hook post-update','step:omarchy-update-mise','step:yay','step:omarchy-update-stay-awake stop','step:omarchy-update-restart --reboot-only']]
+positions=[next(i for i,line in enumerate(s) if line.startswith(prefix)) for prefix in ['step:omarchy-update-system-pkgs','step:omarchy-pkg-sync --repos','step:omarchy-migrate','step:omarchy-update-restart --services-only','step:omarchy-hook post-update','step:omarchy-update-mise','step:yay','step:omarchy-pkg-sync --aur','step:omarchy-update-stay-awake stop','step:omarchy-update-restart --reboot-only']]
 assert positions==sorted(positions), s
-yay=positions[5]
+mise=positions[5]
+yay=positions[6]
 # Everything before AUR shares the one authorization: plain sudo, no revokes.
-assert not any(line=='sudo -k' or line.startswith('sudo -N ') for line in s[auth:positions[4]]), s
+assert not any(line=='sudo -k' or line.startswith('sudo -N ') for line in s[auth:mise]), s
 assert 'sudo /usr/bin/true' in s[auth:positions[0]+1], s
 # AUR builds start from a revoked credential and cannot refresh one.
-assert 'sudo -k' in s[positions[4]:yay], s
+# Arch list sync stays on the warm side of that revoke; AUR list sync stays cold.
+revoke=next(i for i in range(mise, yay) if s[i]=='sudo -k')
+assert positions[1] < revoke < positions[7], s
+assert 'sudo -k' in s[mise:yay], s
 assert not any(line.startswith('sudo ') and line!='sudo -k' and not line.startswith('sudo -N ') for line in s[yay:]), s
 PY
   pass "update $args authorizes once for everything but AUR, which runs cold last, and exits cold"
 done
 
-for step in omarchy-update-system-pkgs yay omarchy-hook omarchy-update-mise; do
+for step in omarchy-update-system-pkgs omarchy-pkg-sync yay omarchy-hook omarchy-update-mise; do
   reset_boundary
   export SUDO_TEST_FAIL_STEP=$step
   if run_update -y; then fail "$step failure must fail the update"; fi

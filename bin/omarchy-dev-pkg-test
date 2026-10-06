@@ -135,3 +135,8 @@ for PKG in "${PKGS[@]}"; do
   fi
   sudo pacman -U --noconfirm --overwrite='*' "$built_pkg"
 done
+
+# The installed tree now has the package lists. A dev machine does not run
+# omarchy update, so this is what installs packages added to those lists.
+echo "Running omarchy-pkg-sync"
+omarchy-pkg-sync
