@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Vix
+Exec=omarchy-launch-webapp "https://vix.com/es-es"
+Terminal=false
+Type=Application
+Icon=vix
+StartupNotify=true

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Frontend Masters
+Exec=omarchy-launch-webapp "https://frontendmasters.com/dashboard/"
+Terminal=false
+Type=Application
+Icon=frontend-masters
+StartupNotify=true
