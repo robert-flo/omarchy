@@ -126,6 +126,10 @@ if [[ ${1:-} == "-y" ]] || omarchy-update-confirm; then
   # takes the update with it rather than migrating against what is still on disk.
   omarchy-update-system-pkgs
 
+  # The transaction above is what lands the package lists. Sync Arch packages
+  # while this update's sudo authorization is still alive.
+  omarchy-pkg-sync --repos
+
   omarchy-migrate
   omarchy-update-orphan-pkgs
 
@@ -143,9 +147,11 @@ if [[ ${1:-} == "-y" ]] || omarchy-update-confirm; then
   # AUR builds run third-party PKGBUILD code, so they go last and never see the
   # update's authorization: revoke it, then authenticate each sudo call with
   # the no-update wrapper, for yay and any bare sudo a PKGBUILD runs, so an AUR
-  # install prompts without caching anything.
+  # install prompts without caching anything. New AUR packages from the install
+  # list share that cold phase.
   end_update_authorization
   PATH="$OMARCHY_PATH/default/omarchy/sudo-no-update:$PATH" OMARCHY_SUDO_NO_UPDATE=1 omarchy-update-aur-pkgs
+  PATH="$OMARCHY_PATH/default/omarchy/sudo-no-update:$PATH" OMARCHY_SUDO_NO_UPDATE=1 omarchy-pkg-sync --aur
   omarchy_security_revoke_sudo_timestamp
 
   # The sleep inhibitor covers AUR builds, hooks and mise as well; releasing it
