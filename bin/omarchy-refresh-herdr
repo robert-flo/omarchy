@@ -1,6 +1,13 @@
 #!/bin/bash
 
-# omarchy:summary=Overwrite the user herdr config with the Omarchy default and reload herdr.
+# omarchy:summary=Overwrite the user herdr config with the Omarchy default, reload herdr, and seed fleet spaces when it is running.
 
 omarchy-refresh-config herdr/config.toml
 omarchy-restart-herdr
+
+# A closed Herdr still accepts the config refresh. Spaces need the live server,
+# so they wait until the next refresh that finds it running.
+running=$(herdr status server --json 2>/dev/null | jq -r '.running // false' || true)
+if [[ $running == "true" ]]; then
+  omarchy-herdr-seed-spaces
+fi
