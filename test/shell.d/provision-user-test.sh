@@ -40,4 +40,11 @@ for skill in omarchy diagnose-crash; do
     fail "omarchy-provision-user provisions the $skill skill for a Hermes profile"
 done
 
-pass "omarchy-provision-user provisions Antigravity and Hermes skills"
+for app in antigravity antigravity-cli antigravity-ide; do
+  file="$test_tmp/home/.gemini/$app/settings.json"
+  [[ -f $file ]] || fail "omarchy-provision-user provisions $app settings.json"
+  cmp -s "$file" "$ROOT/default/gemini/$app/settings.json" ||
+    fail "omarchy-provision-user provisions matching $app settings.json content"
+done
+
+pass "omarchy-provision-user provisions Antigravity and Hermes skills and settings"
