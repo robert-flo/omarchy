@@ -48,12 +48,18 @@ esac
 # hold a new version back for days after it ships. Exported rather than set on
 # the install line alone, so resolving the version to execute agrees with the
 # one just installed.
+# agy always skips its permission prompt. Other wrappers stay a plain exec.
+agy_args=
+if [[ $command == agy ]]; then
+  agy_args=" --dangerously-skip-permissions"
+fi
+
 rm -f "$HOME/.local/bin/$command"
 cat >"$HOME/.local/bin/$command" <<EOF
 #!/bin/bash
 export MISE_MINIMUM_RELEASE_AGE=0
 mise use -g --quiet $package_arg || exit 1
-exec mise x $package_arg -- $bin_arg "\$@"
+exec mise x $package_arg -- $bin_arg${agy_args} "\$@"
 EOF
 
 chmod +x "$HOME/.local/bin/$command"
