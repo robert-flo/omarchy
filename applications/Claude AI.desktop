@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Claude AI
+Exec=omarchy-launch-webapp "https://claude.ai/new"
+Terminal=false
+Type=Application
+Icon=claude-ai
+StartupNotify=true
