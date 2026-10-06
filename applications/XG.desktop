@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=XG
+Exec=omarchy-launch-webapp "https://x.com/i/grok"
+Terminal=false
+Type=Application
+Icon=x
+StartupNotify=true

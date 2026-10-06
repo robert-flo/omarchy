@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Xataka
+Exec=omarchy-launch-webapp https://www.xataka.com/
+Terminal=false
+Type=Application
+Icon=xataka
+StartupNotify=true
