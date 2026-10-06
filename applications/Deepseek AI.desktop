@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Deepseek AI
+Exec=omarchy-launch-webapp "https://chat.deepseek.com/"
+Terminal=false
+Type=Application
+Icon=deepseek-ai
+StartupNotify=true

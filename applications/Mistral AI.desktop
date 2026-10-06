@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Mistral AI
+Exec=omarchy-launch-webapp "https://chat.mistral.ai/chat"
+Terminal=false
+Type=Application
+Icon=mistral-ai
+StartupNotify=true

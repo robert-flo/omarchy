@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=MiMo AI Studio
+Exec=omarchy-launch-webapp "https://aistudio.xiaomimimo.com/#/c"
+Terminal=false
+Type=Application
+Icon=mimo
+StartupNotify=true
