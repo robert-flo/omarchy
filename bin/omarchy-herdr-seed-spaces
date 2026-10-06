@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# omarchy:summary=Create the fleet Herdr spaces and their agy, elio, and nvim tabs.
+
+set -euo pipefail
+
+OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
+list="$OMARCHY_PATH/default/herdr/spaces"
+
+for cmd in agy elio nvim jq herdr; do
+  if ! command -v -- "$cmd" >/dev/null 2>&1; then
+    echo "Missing command: $cmd" >&2
+    exit 1
+  fi
+done
+
+[[ -f $list ]] || {
+  echo "Missing Herdr space list: $list" >&2
+  exit 1
+}
+
+running=$(herdr status server --json | jq -r '.running // false')
+if [[ $running != "true" ]]; then
+  echo "Herdr is not running. Open Herdr, then run omarchy-herdr-seed-spaces again." >&2
+  exit 1
+fi
+
+snapshot=$(herdr api snapshot)
+
+require_id() {
+  local value=$1
+  local what=$2
+  if [[ -z $value || $value == "null" ]]; then
+    echo "Herdr did not return $what" >&2
+    exit 1
+  fi
+}
+
+workspace_for() {
+  local project=$1
+  local raw=$2
+  jq -r --arg cwd "$project" --arg raw "$raw" '
+    [ .result.snapshot.panes[]?
+      | select(.cwd == $cwd or .cwd == $raw or .foreground_cwd == $cwd or .foreground_cwd == $raw)
+      | .workspace_id ] | first // empty
+  ' <<<"$snapshot"
+}
+
+tab_exists() {
+  local workspace_id=$1
+  local label=$2
+  jq -e --arg id "$workspace_id" --arg label "$label" '
+    [ .result.snapshot.tabs[]?
+      | select(.workspace_id == $id and .label == $label) ] | length > 0
+  ' <<<"$snapshot" >/dev/null
+}
+
+run_in_new_tab() {
+  local workspace_id=$1
+  local project=$2
+  local label=$3
+  shift 3
+  local made pane_id
+  made=$(herdr tab create --workspace "$workspace_id" --cwd "$project" --label "$label" --no-focus)
+  pane_id=$(jq -r '.result.root_pane.pane_id' <<<"$made")
+  require_id "$pane_id" "a pane id for $label"
+  herdr pane run "$pane_id" "$@" >/dev/null
+}
+
+while IFS= read -r name || [[ -n $name ]]; do
+  [[ $name =~ ^[[:space:]]*# ]] && continue
+  name=${name#"${name%%[![:space:]]*}"}
+  name=${name%"${name##*[![:space:]]}"}
+  [[ -n $name ]] || continue
+
+  raw="$HOME/Work/tries/$name"
+  project=$(realpath -m -- "$raw")
+  workspace_id=$(workspace_for "$project" "$raw")
+  seeded_agy=0
+
+  if [[ -z $workspace_id ]]; then
+    created=$(herdr workspace create --cwd "$project" --label "$name" --no-focus)
+    workspace_id=$(jq -r '.result.workspace.workspace_id' <<<"$created")
+    tab_id=$(jq -r '.result.tab.tab_id' <<<"$created")
+    pane_id=$(jq -r '.result.root_pane.pane_id' <<<"$created")
+    require_id "$workspace_id" "a workspace id for $name"
+    require_id "$tab_id" "a tab id for $name"
+    require_id "$pane_id" "a pane id for $name"
+    # The first tab of a new workspace ignores --label and comes back as "1".
+    herdr tab rename "$tab_id" agy >/dev/null
+    herdr pane run "$pane_id" agy >/dev/null
+    seeded_agy=1
+  else
+    label=$(jq -r --arg id "$workspace_id" '
+      .result.snapshot.workspaces[]? | select(.workspace_id == $id) | .label
+    ' <<<"$snapshot")
+    [[ $label == "$name" ]] || herdr workspace rename "$workspace_id" "$name" >/dev/null
+  fi
+
+  if (( ! seeded_agy )) && ! tab_exists "$workspace_id" agy; then
+    run_in_new_tab "$workspace_id" "$project" agy agy
+  fi
+  if ! tab_exists "$workspace_id" elio; then
+    run_in_new_tab "$workspace_id" "$project" elio elio
+  fi
+  if ! tab_exists "$workspace_id" nvim; then
+    run_in_new_tab "$workspace_id" "$project" nvim nvim .
+  fi
+done <"$list"
