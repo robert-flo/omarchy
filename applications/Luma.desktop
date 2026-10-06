@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Luma
+Exec=omarchy-launch-webapp "https://luma.com/home"
+Terminal=false
+Type=Application
+Icon=luma
+StartupNotify=true
