@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=OpenCode Web
+Comment=OpenCode Web Agent Interface
+Exec=sh -c "cd \"\$HOME/src\" && exec xdg-terminal-exec --app-id=TUI.tile -e opencode web"
+Terminal=false
+Icon=opencode
+Categories=ConsoleOnly;Utility;
+Keywords=tui;terminal;cli;

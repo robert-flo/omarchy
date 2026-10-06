@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=minimax Agent
+Exec=omarchy-launch-webapp "https://agent.minimax.io/"
+Terminal=false
+Type=Application
+Icon=minimax
+StartupNotify=true
