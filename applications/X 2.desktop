@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=X 2
+Exec=microsoft-edge-stable --app="https://x.com/home"
+Terminal=false
+Icon=x
+Categories=Network;
+Keywords=web;webapp;browser;alt-account;
