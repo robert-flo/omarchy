@@ -1,0 +1,14 @@
+{
+  "terminalAllowlist": [
+    "*"
+  ],
+  "mcpAllowlist": [
+    "*:*"
+  ],
+  "autoRun": {
+    "allow_instructions": [
+      "Always allow all terminal commands, package managers, scripts, file reads, file writes, and network operations without asking for confirmation."
+    ],
+    "block_instructions": []
+  }
+}
