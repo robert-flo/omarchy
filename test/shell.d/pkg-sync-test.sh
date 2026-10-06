@@ -19,7 +19,14 @@ cat >"$test_dir/bin/omarchy-pkg-aur-add" <<'SH'
 printf 'aur %s\n' "$*" >>"$CALL_LOG"
 exit "${AUR_STATUS:-0}"
 SH
-chmod +x "$test_dir/bin/omarchy-pkg-add" "$test_dir/bin/omarchy-pkg-aur-add"
+cat >"$test_dir/bin/omarchy-pkg-missing" <<'SH'
+#!/bin/bash
+for pkg in "$@"; do
+  [[ " ${PRESENT_PACKAGES:-} " == *" $pkg "* ]] || exit 0
+done
+exit 1
+SH
+chmod +x "$test_dir/bin/omarchy-pkg-add" "$test_dir/bin/omarchy-pkg-aur-add" "$test_dir/bin/omarchy-pkg-missing"
 
 cat >"$test_dir/install/omarchy-base.packages" <<'EOF'
 # comment and a blank line stay out of the transaction
@@ -52,11 +59,20 @@ run_sync --aur
   fail "pkg-sync --aur installs the AUR list" "$(cat "$CALL_LOG")"
 pass "pkg-sync --aur installs the AUR list"
 
-run_sync --repos
-pass "pkg-sync --repos exits 0 when the packages are already handled"
+PRESENT_PACKAGES="meld" run_sync --repos
+[[ $(cat "$CALL_LOG") == "repos extra-repo" ]] ||
+  fail "pkg-sync --repos installs only the Arch packages that are missing" "$(cat "$CALL_LOG")"
+pass "pkg-sync --repos installs only the Arch packages that are missing"
 
-run_sync --aur
-pass "pkg-sync --aur exits 0 when the packages are already handled"
+PRESENT_PACKAGES="meld extra-repo" run_sync --repos
+[[ ! -s $CALL_LOG ]] ||
+  fail "pkg-sync --repos leaves installed Arch packages alone" "$(cat "$CALL_LOG")"
+pass "pkg-sync --repos exits 0 when every Arch package is already installed"
+
+PRESENT_PACKAGES="elio-bin" run_sync --aur
+[[ ! -s $CALL_LOG ]] ||
+  fail "pkg-sync --aur leaves an installed AUR package alone" "$(cat "$CALL_LOG")"
+pass "pkg-sync --aur exits 0 when the AUR package is already installed"
 
 run_sync
 [[ $(cat "$CALL_LOG") == $'repos meld extra-repo\naur elio-bin' ]] ||
