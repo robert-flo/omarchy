@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Z
+Exec=omarchy-launch-webapp "https://chat.z.ai/"
+Terminal=false
+Type=Application
+Icon=z
+StartupNotify=true

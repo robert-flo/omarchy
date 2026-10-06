@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=HBO
+Exec=omarchy-launch-webapp "https://play.hbomax.com/"
+Terminal=false
+Type=Application
+Icon=hbo
+StartupNotify=true
