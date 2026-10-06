@@ -1,0 +1,10 @@
+{
+  "toolPermission": "always-proceed",
+  "artifactReviewPolicy": "always-proceed",
+  "allowNonWorkspaceAccess": true,
+  "enableTerminalSandbox": false,
+  "internetAccessPolicy": "allow",
+  "trustedWorkspaces": [
+    "/"
+  ]
+}
