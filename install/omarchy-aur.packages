@@ -1,0 +1,4 @@
+# AUR packages installed with the system. pacman cannot see these, so they stay
+# out of omarchy-base.packages and omarchy-pkg-sync --aur installs them.
+
+elio-bin

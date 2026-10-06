@@ -3,8 +3,15 @@
 # omarchy:summary=Add the named packages to the system from the AUR if they're missing. Returns false if it couldn't be done.
 # omarchy:args=<packages...>
 
+sudo_options=()
+if [[ ${OMARCHY_SUDO_NO_UPDATE:-0} == "1" ]]; then
+  sudo_wrapper="$OMARCHY_PATH/default/omarchy/sudo-no-update/sudo"
+  [[ -x $sudo_wrapper ]] || exit 1
+  sudo_options=(--sudo "$sudo_wrapper" --sudoloop=false)
+fi
+
 if omarchy-pkg-missing "$@"; then
-  yay -S --noconfirm --needed -- "$@" || exit 1
+  yay "${sudo_options[@]}" -S --noconfirm --needed -- "$@" || exit 1
 fi
 
 for pkg in "$@"; do
