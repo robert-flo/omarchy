@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Wajo
+Exec=omarchy-launch-webapp https://wajo.ai/fo/
+Terminal=false
+Type=Application
+Icon=wajo
+StartupNotify=true
