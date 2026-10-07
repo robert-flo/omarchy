@@ -55,6 +55,14 @@ for dir in DOWNLOAD:Downloads PICTURES:Pictures VIDEOS:Videos DOCUMENTS:Document
   grep -qxF "xdg-user-dirs-update --set ${dir%%:*} $test_tmp/home/${dir#*:}" "$TEST_COMMAND_LOG" ||
     fail "provisioning names the ${dir%%:*} folder in English" "$(cat "$TEST_COMMAND_LOG")"
 done
+for dir in .cursor .config/cursor; do
+  for file in cli-config.json permissions.json; do
+    target="$test_tmp/home/$dir/$file"
+    [[ -f $target ]] || fail "omarchy-provision-user provisions Cursor $dir/$file"
+    cmp -s "$target" "$ROOT/default/cursor/$file" ||
+      fail "omarchy-provision-user provisions matching Cursor $dir/$file content"
+  done
+done
 for dir in Downloads Pictures Videos Documents Music; do
   [[ -d $test_tmp/home/$dir ]] || fail "provisioning creates the $dir folder it names"
 done
