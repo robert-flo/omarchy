@@ -3,7 +3,7 @@ Version=1.0
 Type=Application
 Name=Antigravity CLI
 Comment=Antigravity TUI Client
-Exec=sh -c "cd \"\$HOME/src\" && exec xdg-terminal-exec --app-id=TUI.tile -e agy"
+Exec=sh -c "cd \\"\\$HOME/Work/tries\\" && exec xdg-terminal-exec --app-id=TUI.tile -e agy"
 Terminal=false
 Icon=antigravity-cli
 Categories=ConsoleOnly;Utility;
