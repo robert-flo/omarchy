@@ -326,3 +326,19 @@ rules_output=$(run_hyprland_window_rules "$fresh_home")
 grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=\tworkspace=10\ttag=' <<<"$rules_output" ||
   fail "browser workspace module directs supported browsers to workspace 10"
 pass "browser workspace module directs supported browsers to workspace 10"
+
+grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=^(Open.*Files?|Open [F|f]older.*|Save.*Files?|Save.*As|Save|All Files|.*wants to [open|save].*|[C|c]hoose.*)\tworkspace=unset\ttag=+floating-window' <<<"$rules_output" ||
+  fail "browser workspace module excludes file pickers and dialogs to floating in active workspace"
+pass "browser workspace module excludes file pickers and dialogs to floating in active workspace"
+
+grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=^(DevTools.*|Developer Tools.*)\tworkspace=unset\ttag=+floating-window' <<<"$rules_output" ||
+  fail "browser workspace module excludes detached DevTools to floating in active workspace"
+pass "browser workspace module excludes detached DevTools to floating in active workspace"
+
+grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=^(Sign in.*|Sign In.*|Log [I|i]n.*|OAuth.*|Extension:.*)\tworkspace=unset\ttag=+floating-window' <<<"$rules_output" ||
+  fail "browser workspace module excludes auth, oauth and extension popups to floating in active workspace"
+pass "browser workspace module excludes auth, oauth and extension popups to floating in active workspace"
+
+grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=(Picture.?in.?[Pp]icture)\tworkspace=unset\ttag=' <<<"$rules_output" ||
+  fail "browser workspace module preserves PiP in active workspace without workspace 10 lock"
+pass "browser workspace module preserves PiP in active workspace without workspace 10 lock"
