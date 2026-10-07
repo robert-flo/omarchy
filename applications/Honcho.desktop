@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Honcho
+Exec=omarchy-launch-webapp https://app.honcho.dev/usage
+Terminal=false
+Type=Application
+Icon=honcho
+StartupNotify=true
+Categories=Development;Network;
