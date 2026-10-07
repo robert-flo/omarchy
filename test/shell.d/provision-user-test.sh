@@ -47,11 +47,13 @@ for app in antigravity antigravity-cli antigravity-ide; do
     fail "omarchy-provision-user provisions matching $app settings.json content"
 done
 
-for file in cli-config.json permissions.json; do
-  target="$test_tmp/home/.cursor/$file"
-  [[ -f $target ]] || fail "omarchy-provision-user provisions Cursor $file"
-  cmp -s "$target" "$ROOT/default/cursor/$file" ||
-    fail "omarchy-provision-user provisions matching Cursor $file content"
+for dir in .cursor .config/cursor; do
+  for file in cli-config.json permissions.json; do
+    target="$test_tmp/home/$dir/$file"
+    [[ -f $target ]] || fail "omarchy-provision-user provisions Cursor $dir/$file"
+    cmp -s "$target" "$ROOT/default/cursor/$file" ||
+      fail "omarchy-provision-user provisions matching Cursor $dir/$file content"
+  done
 done
 
 pass "omarchy-provision-user provisions Antigravity, Cursor, and Hermes skills and settings"
