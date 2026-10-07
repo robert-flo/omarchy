@@ -257,3 +257,94 @@ copy_line=$(awk '/^copy_always_config_defaults$/ { print NR; exit }' "$upgrade_s
 [[ -n $mark_line && -n $copy_line ]] || fail "upgrade-to-quattro preinstall marker and config refresh calls exist"
 (( mark_line < copy_line )) || fail "upgrade-to-quattro detects plain legacy bindings before overwriting Hyprland bindings"
 pass "upgrade-to-quattro preserves preinstall removal before refreshing Hyprland bindings"
+
+run_hyprland_window_rules() {
+  local home="$1"
+
+  HOME="$home" XDG_CONFIG_HOME="$home/.config" XDG_STATE_HOME="$home/.local/state" OMARCHY_PATH="$ROOT" lua <<'LUA'
+package.path = os.getenv("HOME") .. "/.config/?.lua;" .. os.getenv("OMARCHY_PATH") .. "/?.lua;" .. package.path
+
+local function proxy()
+  return setmetatable({}, {
+    __index = function(self, key)
+      local value = proxy()
+      rawset(self, key, value)
+      return value
+    end,
+    __call = function()
+      return {}
+    end,
+  })
+end
+
+local rules = {}
+
+hl = setmetatable({
+  dsp = proxy(),
+  bind = function() end,
+  config = function() end,
+  env = function() end,
+  monitor = function() end,
+  window_rule = function(rule)
+    table.insert(rules, rule)
+  end,
+  workspace_rule = function() end,
+  layer_rule = function() end,
+  gesture = function() end,
+  animation = function() end,
+  curve = function() end,
+  exec_cmd = function() end,
+  dispatch = function() end,
+  on = function() end,
+  timer = function() end,
+  get_config = function() return nil end,
+  get_active_window = function() return nil end,
+}, {
+  __index = function()
+    return function()
+      return {}
+    end
+  end,
+})
+
+require("default.hypr.omarchy")
+
+for _, r in ipairs(rules) do
+  local match = r.match or {}
+  local class = match.class or ""
+  local title = match.title or ""
+  local ws = r.workspace or ""
+  local tag = r.tag or ""
+  if ws ~= "" or tag ~= "" then
+    print(string.format("class=%s\ttitle=%s\tworkspace=%s\ttag=%s", class, title, ws, tag))
+  end
+end
+LUA
+}
+
+rules_output=$(run_hyprland_window_rules "$fresh_home")
+grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=\tworkspace=10\ttag=' <<<"$rules_output" ||
+  fail "browser workspace module directs supported browsers to workspace 10"
+pass "browser workspace module directs supported browsers to workspace 10"
+
+grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=^(Open.*Files?|Open [F|f]older.*|Save.*Files?|Save.*As|Save|All Files|.*wants to [open|save].*|[C|c]hoose.*)\tworkspace=unset\ttag=+floating-window' <<<"$rules_output" ||
+  fail "browser workspace module excludes file pickers and dialogs to floating in active workspace"
+pass "browser workspace module excludes file pickers and dialogs to floating in active workspace"
+
+grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=^(DevTools.*|Developer Tools.*)\tworkspace=unset\ttag=+floating-window' <<<"$rules_output" ||
+  fail "browser workspace module excludes detached DevTools to floating in active workspace"
+pass "browser workspace module excludes detached DevTools to floating in active workspace"
+
+grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=^(Sign in.*|Sign In.*|Log [I|i]n.*|OAuth.*|Extension:.*)\tworkspace=unset\ttag=+floating-window' <<<"$rules_output" ||
+  fail "browser workspace module excludes auth, oauth and extension popups to floating in active workspace"
+pass "browser workspace module excludes auth, oauth and extension popups to floating in active workspace"
+
+grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=(Picture.?in.?[Pp]icture)\tworkspace=unset\ttag=' <<<"$rules_output" ||
+  fail "browser workspace module preserves PiP in active workspace without workspace 10 lock"
+pass "browser workspace module preserves PiP in active workspace without workspace 10 lock"
+
+general_rule_line=$(grep -n "workspace=10" <<<"$rules_output" | head -1 | cut -d: -f1)
+exclusion_rule_line=$(grep -n "workspace=unset" <<<"$rules_output" | head -1 | cut -d: -f1)
+[[ -n $general_rule_line && -n $exclusion_rule_line ]] || fail "browser rules define both general and exclusion rules"
+(( general_rule_line < exclusion_rule_line )) || fail "general workspace 10 rule registers before exclusion rules"
+pass "browser workspace rules register general rule before exclusion overrides"

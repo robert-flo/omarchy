@@ -24,3 +24,6 @@ require_optional.module("omarchy.current.theme.hyprland")
 
 -- Scrolling layout defaults
 require("default.hypr.scrolling")
+
+-- Browser workspaces defaults
+require("default.hypr.browser-workspaces")
