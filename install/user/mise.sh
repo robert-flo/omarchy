@@ -20,6 +20,7 @@ omarchy-mise-install aqua:modem-dev/hunk hunk
 omarchy-mise-install github:basecamp/hey-cli hey
 omarchy-mise-install github:basecamp/basecamp-cli basecamp
 omarchy-mise-install npm:cf cf
+omarchy-mise-install npm:command-code cmd
 omarchy-mise-install github:OpenRouterLabs/ori-releases ori
 if omarchy-cmd-missing muse; then
   omarchy-mise-install "http:muse[url=https://api.meta.ai/muse-launcher.sh,bin=muse,version_list_url=https://api.meta.ai/muse-code/channels/muse-stable,version_json_path=.version]" muse
