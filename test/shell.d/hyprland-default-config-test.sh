@@ -342,3 +342,9 @@ pass "browser workspace module excludes auth, oauth and extension popups to floa
 grep -Fq $'class=^(google-chrome|Google-chrome|microsoft-edge|zen|brave-origin|brave-browser)$\ttitle=(Picture.?in.?[Pp]icture)\tworkspace=unset\ttag=' <<<"$rules_output" ||
   fail "browser workspace module preserves PiP in active workspace without workspace 10 lock"
 pass "browser workspace module preserves PiP in active workspace without workspace 10 lock"
+
+general_rule_line=$(grep -n "workspace=10" <<<"$rules_output" | head -1 | cut -d: -f1)
+exclusion_rule_line=$(grep -n "workspace=unset" <<<"$rules_output" | head -1 | cut -d: -f1)
+[[ -n $general_rule_line && -n $exclusion_rule_line ]] || fail "browser rules define both general and exclusion rules"
+(( general_rule_line < exclusion_rule_line )) || fail "general workspace 10 rule registers before exclusion rules"
+pass "browser workspace rules register general rule before exclusion overrides"
