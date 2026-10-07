@@ -21,3 +21,6 @@ require("default.hypr.windows")
 
 -- Current theme overrides.
 require_optional.module("omarchy.current.theme.hyprland")
+
+-- Scrolling layout defaults
+require("default.hypr.scrolling")
