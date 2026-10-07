@@ -133,6 +133,7 @@ agy_package="antigravity-cli"
 ori_package="github:OpenRouterLabs/ori-releases"
 cursor_agent_package="cursor-agent"
 muse_package="http:muse[url=https://api.meta.ai/muse-launcher.sh,bin=muse,version_list_url=https://api.meta.ai/muse-code/channels/muse-stable,version_json_path=.version]"
+command_code_package="npm:command-code"
 
 assert_lazy_stub() {
   local package=$1
@@ -162,6 +163,7 @@ grep -Fx "$cursor_agent_package" "$stub_log" >/dev/null || fail "user setup crea
 grep -Fx "$omp_package omp" "$stub_log" >/dev/null || fail "user setup creates the Oh My Pi lazy stub"
 grep -Fx "$crush_package" "$stub_log" >/dev/null || fail "user setup creates the Crush lazy stub"
 grep -Fx "$ori_package ori" "$stub_log" >/dev/null || fail "user setup creates the Ori lazy stub"
+grep -Fx "$command_code_package cmd" "$stub_log" >/dev/null || fail "user setup creates the Command Code lazy stub"
 OMARCHY_TEST_MISSING_COMMAND=muse source "$ROOT/install/user/mise.sh"
 grep -Fx "$muse_package muse" "$stub_log" >/dev/null || fail "user setup creates the Muse lazy stub"
 pass "user setup creates the custom agent lazy stubs"
@@ -184,6 +186,19 @@ OMARCHY_TEST_MISSING_COMMAND=muse source "$ROOT/migrations/1788724825.sh" >/dev/
 [[ ! -s $stub_log ]] || fail "Muse migration ignores the preinstall opt-out"
 rm "$test_home/.local/state/omarchy/preinstalls-removed"
 pass "Muse migration preserves existing installs and the preinstall opt-out"
+
+: >"$stub_log"
+OMARCHY_TEST_MISSING_COMMAND=cmd source "$ROOT/migrations/1791336747.sh" >/dev/null
+grep -Fx "$command_code_package cmd" "$stub_log" >/dev/null || fail "Command Code migration creates its lazy stub"
+: >"$stub_log"
+source "$ROOT/migrations/1791336747.sh" >/dev/null
+[[ ! -s $stub_log ]] || fail "Command Code migration replaces an existing command"
+mkdir -p "$test_home/.local/state/omarchy"
+touch "$test_home/.local/state/omarchy/preinstalls-removed"
+OMARCHY_TEST_MISSING_COMMAND=cmd source "$ROOT/migrations/1791336747.sh" >/dev/null
+[[ ! -s $stub_log ]] || fail "Command Code migration ignores the preinstall opt-out"
+rm "$test_home/.local/state/omarchy/preinstalls-removed"
+pass "Command Code migration preserves existing installs and the preinstall opt-out"
 
 
 : >"$stub_log"
