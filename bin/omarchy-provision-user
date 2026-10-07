@@ -114,11 +114,12 @@ if [[ -d "$OMARCHY_PATH"/default/gemini ]]; then
 fi
 
 if [[ -d "$OMARCHY_PATH"/default/cursor ]]; then
-  mkdir -p "$HOME/.cursor"
+  mkdir -p "$HOME/.cursor" "$HOME/.config/cursor"
   for file in cli-config.json permissions.json; do
     src="$OMARCHY_PATH/default/cursor/$file"
     if [[ -f "$src" ]]; then
       cp -f "$src" "$HOME/.cursor/$file"
+      cp -f "$src" "$HOME/.config/cursor/$file"
     fi
   done
 fi
