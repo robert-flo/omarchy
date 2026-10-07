@@ -348,3 +348,33 @@ exclusion_rule_line=$(grep -n "workspace=unset" <<<"$rules_output" | head -1 | c
 [[ -n $general_rule_line && -n $exclusion_rule_line ]] || fail "browser rules define both general and exclusion rules"
 (( general_rule_line < exclusion_rule_line )) || fail "general workspace 10 rule registers before exclusion rules"
 pass "browser workspace rules register general rule before exclusion overrides"
+
+grep -Fq $'class=^(Cursor|cursor|cursor-ide|cursor-ade)$\ttitle=\tworkspace=9\ttag=' <<<"$rules_output" ||
+  fail "dev workspace module directs Cursor to workspace 9"
+pass "dev workspace module directs Cursor to workspace 9"
+
+grep -Fq $'class=^(antigravity-ide|Antigravity|antigravity)$\ttitle=\tworkspace=8\ttag=' <<<"$rules_output" ||
+  fail "dev workspace module directs Antigravity to workspace 8"
+pass "dev workspace module directs Antigravity to workspace 8"
+
+grep -Fq $'class=^(Cursor|cursor|cursor-ide|cursor-ade|antigravity-ide|Antigravity|antigravity)$\ttitle=^(Open.*Files?|Open [F|f]older.*|Save.*Files?|Save.*As|Save|All Files|.*wants to [open|save].*|[C|c]hoose.*)\tworkspace=unset\ttag=+floating-window' <<<"$rules_output" ||
+  fail "dev workspace module excludes file pickers and dialogs to floating in active workspace"
+pass "dev workspace module excludes file pickers and dialogs to floating in active workspace"
+
+grep -Fq $'class=^(Cursor|cursor|cursor-ide|cursor-ade|antigravity-ide|Antigravity|antigravity)$\ttitle=^(DevTools.*|Developer Tools.*)\tworkspace=unset\ttag=+floating-window' <<<"$rules_output" ||
+  fail "dev workspace module excludes detached DevTools to floating in active workspace"
+pass "dev workspace module excludes detached DevTools to floating in active workspace"
+
+grep -Fq $'class=^(Cursor|cursor|cursor-ide|cursor-ade|antigravity-ide|Antigravity|antigravity)$\ttitle=^(Sign in.*|Sign In.*|Log [I|i]n.*|OAuth.*|Extension:.*)\tworkspace=unset\ttag=+floating-window' <<<"$rules_output" ||
+  fail "dev workspace module excludes auth, oauth and extension popups to floating in active workspace"
+pass "dev workspace module excludes auth, oauth and extension popups to floating in active workspace"
+
+dev_cursor_line=$(grep -n "workspace=9" <<<"$rules_output" | head -1 | cut -d: -f1)
+dev_antigravity_line=$(grep -n "workspace=8" <<<"$rules_output" | head -1 | cut -d: -f1)
+dev_exclusion_line=$(grep -n -F $'class=^(Cursor|cursor|cursor-ide|cursor-ade|antigravity-ide|Antigravity|antigravity)$\ttitle=^(Open' <<<"$rules_output" | head -1 | cut -d: -f1)
+[[ -n $dev_cursor_line && -n $dev_antigravity_line && -n $dev_exclusion_line ]] ||
+  fail "dev rules define general rules and exclusion rules"
+(( dev_cursor_line < dev_exclusion_line && dev_antigravity_line < dev_exclusion_line )) ||
+  fail "dev general rules register before dev exclusion rules"
+pass "dev workspace rules register general rules before exclusion overrides"
+
