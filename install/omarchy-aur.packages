@@ -2,3 +2,6 @@
 # out of omarchy-base.packages and omarchy-pkg-sync --aur installs them.
 
 elio-bin
+lyricify
+opencode-desktop-bin
+spicetify-cli
