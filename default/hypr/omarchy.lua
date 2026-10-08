@@ -31,3 +31,6 @@ require("default.hypr.scrolling")
 
 -- Browser workspaces defaults
 require("default.hypr.browser-workspaces")
+
+-- Dev workspaces defaults
+require("default.hypr.dev-workspaces")
