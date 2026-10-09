@@ -1,6 +1,9 @@
 # Omarchy environment (OMARCHY_PATH + PATH), needed even for non-interactive shells
 [[ -r /usr/share/omarchy/default/bash/env-bootstrap ]] && source /usr/share/omarchy/default/bash/env-bootstrap
 
+# Cursor API key (kept out of git; create it with chmod 600)
+[[ -r ~/.config/cursor/api-key ]] && export CURSOR_API_KEY="$(<~/.config/cursor/api-key)"
+
 # If not running interactively, don't do anything else (leave this above the rc source)
 [[ $- != *i* ]] && return
 
