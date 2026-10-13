@@ -56,14 +56,8 @@ graph TD
 ## 3. The Machinery: How the Fork Operates
 
 ### Layer 1: Pacman Shadowing
-In `default/pacman/pacman-stable.conf`, the personal repository is declared **before** the official repository:
-```ini
-[omarchy-personal]
-Server = https://robert-flo.github.io/omarchy-personal-repo/stable/$arch
+`default/pacman/pacman-stable.conf` stays **byte-identical** to upstream (fork sync ADR 0024). The personal repo is injected at runtime by the `pre-refresh-pacman` hook (`config/omarchy/hooks/pre-refresh-pacman.d/omarchy-personal-repo`), which inserts `default/pacman/omarchy-personal.repo.snippet` **immediately before** `[omarchy]` whenever `omarchy refresh pacman` or a channel switch runs.
 
-[omarchy]
-Include = /etc/pacman.d/omarchy-mirrorlist
-```
 Because pacman resolves duplicate packages from the first repository listed, any package present in `[omarchy-personal]` **shadows** (overrides) the official package of the same name.
 
 ### Version Precedence (`pkgrel >= 99`)
