@@ -1,0 +1,27 @@
+#!/bin/bash
+# Inject [omarchy-personal] before [omarchy] after the channel template is copied.
+# Keeps default/pacman/pacman-*.conf identical to upstream for fork sync (ADR 0024).
+
+set -euo pipefail
+
+CONF=/etc/pacman.conf
+SNIPPET="${OMARCHY_PATH:-/usr/share/omarchy}/default/pacman/omarchy-personal.repo.snippet"
+
+[[ -r $SNIPPET ]] || exit 0
+grep -q '^\[omarchy-personal\]' "$CONF" && exit 0
+grep -q '^\[omarchy\]' "$CONF" || exit 0
+
+tmp=$(mktemp)
+sudo awk -v snippet="$SNIPPET" '
+BEGIN {
+  while ((getline line < snippet) > 0) buf = buf line "\n"
+  close(snippet)
+}
+/^\[omarchy\]/ && buf != "" && !done {
+  printf "%s", buf
+  done = 1
+}
+{ print }
+' "$CONF" >"$tmp"
+sudo install -m 0644 "$tmp" "$CONF"
+rm -f "$tmp"
