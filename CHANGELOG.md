@@ -4,6 +4,18 @@ This document tracks all custom changes, features, and fixes applied specificall
 
 Because upstream (`omacom/omarchy`) receives frequent commits and releases, this log serves as the authoritative record of personal customizations maintained on top of upstream, making it easy to audit differences without inspecting upstream git history.
 
+## [2026-10-13]
+
+### Pacman personal repo via hook (no `pacman-stable.conf` edits)
+
+- **Resolved Issues:** [`robert-flo/omarchy#76`](https://github.com/robert-flo/omarchy/issues/76)
+
+#### What was changed:
+1. **`default/pacman/pacman-stable.conf`**: restored to match upstream mirror (no `[omarchy-personal]` block).
+2. **`default/pacman/omarchy-personal.repo.snippet`**: stanza shipped with the fork.
+3. **`config/omarchy/hooks/pre-refresh-pacman.d/omarchy-personal-repo`**: injects the snippet before `[omarchy]` on each refresh.
+4. **`migrations/1791380000.sh`**: installs the hook into `~/.config` on update.
+
 ## [2026-09-30]
 
 ### Key Rotation & v4.0.4-99 Release Alignment
