@@ -1,4 +1,8 @@
 # Fork personal repo (ADR-003). Listed before [omarchy] so pacman shadows official
 # packages at equal version. Signed with CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4.
+# Segundo Server: packages over GitHub's 100MB git limit cannot live in
+# gh-pages; the 'pkg-stable' release of omarchy-personal-repo serves them and
+# pacman tries Servers in order (Pages first, release as fallback).
 [omarchy-personal]
 Server = https://robert-flo.github.io/omarchy-personal-repo/stable/x86_64
+Server = https://github.com/robert-flo/omarchy-personal-repo/releases/download/pkg-stable
