@@ -6,12 +6,18 @@ name: Upstream merge
 #   PR a personal y merge con merge-commit (conserva la historia de upstream).
 # - checks: sintaxis bash de bin/, migrations/, install/ y tests del fork.
 # - conflicto, checks rojos o cambios de upstream en .github/workflows (GITHUB_TOKEN
-#   no puede empujarlos) -> solo abre/comenta un issue; personal no se toca.
+#   no puede empujarlos) -> reporte estandar ci-failure:upstream-merge (accion
+#   ci-report de omarchy-personal-repo); personal no se toca. Verde -> cierra el issue.
 # Sin secrets: solo GITHUB_TOKEN. omarchy-personal-repo/auto-pin.yml repinea y publica.
 on:
   schedule:
     - cron: '0 10 * * *'
   workflow_dispatch:
+    inputs:
+      force_fail:
+        description: "prueba: forzar un fallo (ci-report)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -33,9 +39,15 @@ jobs:
         with:
           ref: personal
           fetch-depth: 0
+      - name: Fallo forzado (prueba)
+        if: inputs.force_fail
+        run: |
+          exec > >(tee -a "$RUNNER_TEMP/ci.log") 2>&1
+          echo "::error::fallo forzado por workflow_dispatch (force_fail)"; exit 1
       - name: Merge quattro
         id: m
         run: |
+          exec > >(tee -a "$RUNNER_TEMP/ci.log") 2>&1
           git config user.name "Roberto Flores"
           git config user.email "25asab015@ujmd.edu.sv"
           git fetch --no-tags https://github.com/omacom/omarchy.git quattro:refs/remotes/upstream/quattro
@@ -60,6 +72,7 @@ jobs:
         id: t
         if: steps.m.outputs.action == 'pr'
         run: |
+          exec > >(tee -a "$RUNNER_TEMP/ci.log") 2>&1
           rc=0
           for f in bin/* migrations/*.sh install/*.sh install/*/*.sh test/shell.d/*.sh; do
             [[ -f $f ]] || continue
@@ -70,16 +83,25 @@ jobs:
       - name: PR y merge
         if: steps.m.outputs.action == 'pr'
         run: |
+          exec > >(tee -a "$RUNNER_TEMP/ci.log") 2>&1
           br="${{ steps.m.outputs.branch }}"
           git push origin "$br"
           url="$(gh pr create --base personal --head "$br" --title "sync: merge omacom/quattro ${{ steps.m.outputs.up }}" \
             --body "Merge diario automatico (ADR-013). Sin rebase ni force-push. auto-pin de omarchy-personal-repo lo publica.")"
           gh pr merge "$url" --merge --delete-branch --match-head-commit "$(git rev-parse HEAD)"
-      - name: Issue
-        if: failure() || steps.m.outputs.action == 'issue'
+      - name: Resumen de error
+        id: err
+        if: always()
+        env:
+          REASON: ${{ steps.m.outputs.reason }}
         run: |
-          t="upstream-merge: requiere intervencion"
-          run="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          body="$(printf '%s\n\nRun: %s\n\n`personal` no se modifico. Resolver a mano: rama desde personal, `git merge omacom/quattro`, PR con merge-commit (nunca rebase/force).' "${{ steps.m.outputs.reason || 'Fallo de checks o del job.' }}" "$run")"
-          n="$(gh issue list --state open --search "\"$t\" in:title" --json number --jq '.[0].number')"
-          if [[ -n "$n" ]]; then gh issue comment "$n" --body "$body"; else gh issue create --title "$t" --body "$body"; fi
+          st="${{ job.status }}"; [[ "${{ steps.m.outputs.action }}" == issue ]] && st=failure
+          echo "status=$st" >> "$GITHUB_OUTPUT"
+          { echo "text<<CIEOF"; [[ -n "$REASON" ]] && printf '%s\n---\n' "$REASON"; tail -n 15 "$RUNNER_TEMP/ci.log" 2>/dev/null; echo "personal no se modifico. Resolver: rama desde personal, git merge omacom/quattro, PR con merge-commit (nunca rebase/force)."; echo CIEOF; } >> "$GITHUB_OUTPUT"
+      - name: Reporte ci-failure
+        if: always()
+        uses: robert-flo/omarchy-personal-repo/.github/actions/ci-report@main
+        with:
+          workflow: upstream-merge
+          status: ${{ steps.err.outputs.status }}
+          error: ${{ steps.err.outputs.text }}
