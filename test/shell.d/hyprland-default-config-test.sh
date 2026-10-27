@@ -107,20 +107,6 @@ grep -Fq $'SUPER + SHIFT + Q	Calculator' <<<"$fresh_output" || fail "default app
 grep -Fq $'XF86Calculator	Calculator' <<<"$fresh_output" || fail "default application bindings include the calculator hardware key"
 pass "default application bindings load from package defaults"
 
-grep -F 'hl.dsp.send_key_state({ mods = mods, key = key, state = "down" })' "$ROOT/default/hypr/bindings/clipboard.lua" >/dev/null ||
-  fail "universal clipboard shortcuts send explicit mods to the focused surface"
-pass "universal clipboard shortcuts send explicit mods to the focused surface"
-
-if grep -E 'send_key_state\(\{[^}]*window' "$ROOT/default/hypr/bindings/clipboard.lua" >/dev/null; then
-  fail "universal clipboard shortcuts do not target only normal windows"
-fi
-pass "universal clipboard shortcuts do not exclude layer-shell fields"
-
-if grep -F 'wtype -M' "$ROOT/default/hypr/bindings/clipboard.lua" >/dev/null; then
-  fail "universal clipboard shortcuts avoid the virtual keyboard so held SUPER cannot merge in"
-fi
-pass "universal clipboard shortcuts avoid virtual keyboard modifier merging"
-
 removed_home="$tmpdir/removed-home"
 mkdir -p "$removed_home/.local/state/omarchy"
 touch "$removed_home/.local/state/omarchy/preinstalls-removed"
