@@ -1,175 +1,77 @@
-# Omarchy — Personal Fork
+# Omarchy
 
-> **The Alternate Universe:** A tailored, reproducible layer over vanilla [Omarchy](https://omarchy.org), engineered to keep an entire fleet of personal machines identically configured and continuously updated via standard `omarchy update`.
+Omarchy is a beautiful, fun & agentic Linux distribution by DHH.
 
----
+Read more at [omarchy.org](https://omarchy.org).
 
-## 1. Why This Fork Exists (Philosophy & Core Concept)
+## The Omarchy Manual
 
-Vanilla Omarchy (developed by [Basecamp / OMACOM](https://github.com/omacom/omarchy)) provides an opinionated, beautiful, and agentic Linux distribution built on Arch Linux.
+The manual lives in [`manual/`](manual/), which is its authoritative source.
 
-This fork exists to solve a fundamental operational challenge:
-1. **Zero-Drift Fleet Consistency:** Run multiple physical machines installed from the official Omarchy ISO, but have every machine automatically converge onto personal customizations without snowflake dotfiles, divergent local hacks, or manual post-install scripts.
-2. **Native Upstream Delivery:** Ship every configuration, webapp launcher, theme, CLI tool, and package override through standard pacman packages consumed natively by `omarchy update`.
-3. **Upstream Harmony & Rebaseability:** Maintain clean separation from upstream so official releases can be rebased smoothly, while personal fixes or generic features can be cleanly contributed back upstream as Pull Requests against upstream `quattro`.
+- [Welcome to Omarchy!](manual/01-welcome-to-omarchy.md)
 
----
+**The Basics**
 
-## 2. The Multi-Repository Ecosystem (The Puzzle Pieces)
+- [Getting Started](manual/02-getting-started.md)
+- [Coming From Mac or Windows](manual/03-coming-from-mac-or-windows.md)
+- [Navigation](manual/04-navigation.md)
+- [The top bar](manual/05-the-top-bar.md)
+- [Themes](manual/06-themes.md)
+- [Hotkeys](manual/07-hotkeys.md)
+- [Unified Clipboard & History](manual/08-unified-clipboard-history.md)
+- [Reminders](manual/09-reminders.md)
+- [Notices](manual/10-notices.md)
+- [Text Extraction & Dictation](manual/11-text-extraction-dictation.md)
+- [Screenshots & Recording](manual/12-screenshots-recording.md)
+- [Toggles, idle & screensaver](manual/13-toggles-idle-screensaver.md)
+- [Omarchy CLI](manual/14-omarchy-cli.md)
 
-Rather than maintaining a monolithic repository, the architecture is distributed across four modular repositories on GitHub:
+**The Applications**
 
-```mermaid
-graph TD
-    subgraph Repos ["GitHub Cloud Infrastructure (@robert-flo)"]
-        R_Source["robert-flo/omarchy<br/>• personal (custom fork source)<br/>• quattro (upstream clean mirror)"]
-        R_Pkgs["robert-flo/omarchy-pkgs<br/>• personal (packaging recipes)<br/>• master (upstream packaging mirror)"]
-        R_Pacman["robert-flo/omarchy-personal-repo<br/>• gh-pages (binary pacman repository)"]
-        R_Docs["robert-flo/fork-docs<br/>• main (canonical documentation portal)"]
-    end
+- [Terminal](manual/15-terminal.md)
+- [Neovim](manual/16-neovim.md)
+- [AI](manual/17-ai.md)
+- [Development Tools](manual/18-development-tools.md)
+- [Shell Tools](manual/19-shell-tools.md)
+- [Shell Functions](manual/20-shell-functions.md)
+- [TUIs](manual/21-tuis.md)
+- [GUIs](manual/22-guis.md)
+- [Browsers](manual/23-browsers.md)
+- [Commercial apps/services](manual/24-commercial-apps-services.md)
+- [Web Apps](manual/25-web-apps.md)
+- [Gaming](manual/26-gaming.md)
+- [Filling out PDFs](manual/27-filling-out-pdfs.md)
+- [Windows VM](manual/28-windows-vm.md)
+- [Other Packages](manual/29-other-packages.md)
 
-    subgraph Roles ["Machine Personas"]
-        Dev["Dev Machine<br/>(Source changes + local pkg-test)"]
-        Consumer["Fleet / Daughter Machines<br/>(Standard omarchy update)"]
-    end
+**Configuration**
 
-    Dev -->|1. push personal| R_Source
-    R_Source -->|2. triggers release-personal Action| R_Pkgs
-    R_Pkgs -->|3. builds, GPG signs & publishes| R_Pacman
-    R_Pacman -->|4. pacman resolves omarchy-personal| Consumer
-    R_Pacman -->|4. pacman resolves omarchy-personal| Dev
-    R_Docs -.->|architectural guidelines| Dev
-```
+- [Updates](manual/30-updates.md)
+- [Dotfiles](manual/31-dotfiles.md)
+- [Shell plugins](manual/32-shell-plugins.md)
+- [Monitors](manual/33-monitors.md)
+- [Keyboard, Mouse, Trackpad](manual/34-keyboard-mouse-trackpad.md)
+- [Networking](manual/35-networking.md)
+- [System sleep](manual/36-system-sleep.md)
+- [Hardware authentication](manual/37-hardware-authentication.md)
+- [Fonts](manual/38-fonts.md)
+- [Backgrounds](manual/39-backgrounds.md)
+- [Prompt](manual/40-prompt.md)
+- [Branding](manual/41-branding.md)
+- [Common tweaks](manual/42-common-tweaks.md)
+- [Making your own theme](manual/43-making-your-own-theme.md)
 
-### Component Roles & Repositories
+**The Rest**
 
-| Repository | Active Branch | Role in the Ecosystem |
-| :--- | :--- | :--- |
-| [**`robert-flo/omarchy`**](https://github.com/robert-flo/omarchy) | `personal` | **Fork Source Code:** Contains all custom configurations (`config/`), webapps (`applications/`), scripts (`bin/`), and package lists. Rebased continuously on top of `quattro`. |
-| [**`robert-flo/omarchy`**](https://github.com/robert-flo/omarchy) | `quattro` | **Upstream Mirror:** 100% clean mirror of official `omacom/omarchy:quattro`. Serves as the immutable baseline for rebases and official upstream Pull Requests. |
-| [**`robert-flo/omarchy-pkgs`**](https://github.com/robert-flo/omarchy-pkgs) | `personal` / `master` | **Packaging Engine & CI:** Houses the PKGBUILD recipes for the personal pair (`omarchy` & `omarchy-settings`), Docker build environment, and GitHub Actions automation ([`release-personal.yml`](https://github.com/robert-flo/omarchy-pkgs/blob/personal/.github/workflows/release-personal.yml)). |
-| [**`robert-flo/omarchy-personal-repo`**](https://github.com/robert-flo/omarchy-personal-repo) | `gh-pages` | **Pacman Binary Repository:** Hosted on GitHub Pages. Serves the pacman package databases (`omarchy-personal.db`, `.sig`, `.files`) and binary packages signed by GPG key `14EDEAC8B295BB30CA6249A9E954119B629B58F6` (rotated per ADR 0002 of omarchy-personal-repo; old `76AFFCC217DB9FC4` retired). |
-| [**`robert-flo/fork-docs`**](https://github.com/robert-flo/fork-docs) | `main` | **Canonical Documentation Portal:** The golden standard ("Estándar de Oro") and single source of truth. Live site at [https://robert-flo.github.io/fork-docs/](https://robert-flo.github.io/fork-docs/) containing the User Guide, Architecture & Decision Matrix, Operations, all 9 ADRs, and historical reference. |
+- [Mac support](manual/44-mac-support.md)
+- [Troubleshooting](manual/45-troubleshooting.md)
+- [FAQ](manual/46-faq.md)
+- [System snapshots](manual/47-system-snapshots.md)
+- [Security](manual/48-security.md)
+- [Omarchy on...](manual/49-omarchy-on.md)
+- [Dual Boot Install](manual/50-dual-boot-install.md)
+- [Unattended Installs](manual/51-unattended-installs.md)
 
----
+## License
 
-## 3. The Machinery: How the Fork Operates
-
-### Layer 1: Pacman Shadowing
-`default/pacman/pacman-stable.conf` stays **byte-identical** to upstream (fork sync ADR 0024). The personal repo is injected at runtime by the `pre-refresh-pacman` hook (`config/omarchy/hooks/pre-refresh-pacman.d/omarchy-personal-repo`), which inserts `default/pacman/omarchy-personal.repo.snippet` **immediately before** `[omarchy]` whenever `omarchy refresh pacman` or a channel switch runs.
-
-Because pacman resolves duplicate packages from the first repository listed, any package present in `[omarchy-personal]` **shadows** (overrides) the official package of the same name.
-
-### Version Precedence (`pkgrel >= 99`)
-To guarantee that `omarchy update` never accidentally replaces personal packages with official builds, the personal packaging recipes enforce a strict versioning rule:
-- **Official packages:** `pkgver=4.0.x`, `pkgrel=1`
-- **Personal packages:** `pkgver=4.0.x`, `pkgrel=99+` (e.g. `4.0.2-104`)
-
-By Arch Linux package version comparison rules (`vercmp`), version `4.0.x-104` will always supersede `4.0.x-1`. Official upstream mirrors continue to supply the rest of the ecosystem (Hyprland, Waybar, Neovim, etc.) without modification.
-
----
-
-## 4. How to Start Fresh: Dev Machine vs Daughter Machine
-
-Every computer in your setup operates in one of two clearly defined roles:
-
-```
-┌────────────────────────────────────────────────────────┐
-│                   STARTING FRESH                       │
-└────────────────────────────────────────────────────────┘
-                           │
-         Is this machine used to modify the code?
-          /                                    \
-       YES                                      NO
-        │                                        │
-  ▼───────────▼                            ▼───────────▼
-   DEV MACHINE                           DAUGHTER MACHINE
- (The "Factory")                          (The "Consumer")
-```
-
-### Option A: Setting Up a Dev Machine (The Factory)
-*Use this role on the primary computer where you write code, customize configs, and develop the fork.*
-
-1. **Clone the repositories:** Clone [`robert-flo/omarchy`](https://github.com/robert-flo/omarchy) (checkout `personal`) and [`robert-flo/fork-docs`](https://github.com/robert-flo/fork-docs).
-2. **Iterate locally (Fast Dev Loop):**
-   ```bash
-   # Make a change in applications/, config/, bin/, etc.
-   omarchy dev pkg-test         # Compiles and installs the package locally as dev.<sha>
-   omarchy refresh <component>  # Materializes the change immediately (e.g., shell, hyprland, config)
-   ```
-   *In dev mode, packages are tagged `dev.<sha>`. Nothing is published to other machines.*
-3. **Publish to the fleet:**
-   When your changes are tested and ready:
-   - Commit and push to `personal` using the strict branch workflow.
-   - GitHub Actions ([`release-personal.yml`](https://github.com/robert-flo/omarchy-pkgs/blob/personal/.github/workflows/release-personal.yml)) automatically compiles the packages inside an Arch container, signs them with GPG key `14EDEAC8B295BB30CA6249A9E954119B629B58F6`, and publishes them to [`omarchy-personal-repo`](https://github.com/robert-flo/omarchy-personal-repo).
-
----
-
-### Option B: Setting Up a Daughter Machine (The Consumer Fleet)
-*Use this role on any other personal laptop or desktop where you want your personal environment delivered automatically without doing development work.*
-
-A daughter machine is installed from the **standard official Omarchy ISO**. You onboard it into your personal universe **once**:
-
-1. **Trust your personal GPG key (One-time setup):**
-   ```bash
-   curl -fsSL https://raw.githubusercontent.com/robert-flo/omarchy-personal-repo/main/keys/omarchy-personal-repo.pub.asc | sudo pacman-key --add -
-   sudo pacman-key --lsign-key 14EDEAC8B295BB30CA6249A9E954119B629B58F6
-   sudo pacman-key --delete CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4 2>/dev/null || true   # retired key
-   ```
-2. **Install the initial personal package pair:**
-   ```bash
-   # Download and install the current personal package pair from your repository
-   sudo pacman -U \
-     https://robert-flo.github.io/omarchy-personal-repo/stable/x86_64/omarchy-4.0.4-99-any.pkg.tar.zst \
-     https://robert-flo.github.io/omarchy-personal-repo/stable/x86_64/omarchy-settings-4.0.4-99-any.pkg.tar.zst
-   ```
-3. **Configure pacman shadowing & converge:**
-   ```bash
-   omarchy refresh pacman       # Injects [omarchy-personal] before [omarchy]
-   omarchy update               # Runs pacman -Syu, migrations, and hooks
-   omarchy reinstall-configs    # Materializes user configurations from /etc/skel
-   ```
-
-### Day-to-Day Operation on Daughter Machines:
-Once onboarded, **you never configure anything manually again**. Whenever you publish changes from your Dev machine, simply run:
-```bash
-omarchy update
-```
-Pacman detects the new personal package version, downloads it from GitHub Pages, runs migrations, executes post-update hooks, and synchronizes your environment automatically.
-
----
-
-## 5. Mandatory Rules for AI Agents and Contributors
-
-To maintain architectural integrity across all repositories, human developers and AI assistants must adhere strictly to these two rules:
-
-### 1. Strict Git Branching Policy
-- **NEVER** push directly to base branches (`personal`, `quattro`, `master`, `gh-pages`, `main`).
-- **ALWAYS** create a feature branch (`feat/...`, `docs/...`, `fix/...`), push to the feature branch, merge into the target branch, and immediately delete the feature branch both locally and remotely:
-  ```bash
-  git checkout -b feat/my-change
-  # ... make commits ...
-  git push -u origin feat/my-change
-  git checkout personal
-  git merge --ff-only feat/my-change
-  git push origin personal
-  git branch -d feat/my-change
-  git push origin --delete feat/my-change
-  ```
-
-### 2. The Decision Matrix
-Before placing or moving any file in the fork, consult the **Decision Matrix** in [`fork-docs/architecture/02-matriz-de-decision.md`](https://robert-flo.github.io/fork-docs/architecture/02-matriz-de-decision). Every customization must be categorized into its authoritative destination:
-- **User configurations:** `config/<app>/` (installed to `~/.config/<app>/` via `omarchy-settings`).
-- **Webapps & Launchers:** `applications/*.desktop` (installed to `~/.local/share/applications/`).
-- **System executables:** `bin/omarchy-*` (installed to `/usr/bin/` via `omarchy`).
-- **Third-party wrappers:** `install/user/*.sh` + `omarchy-mise-install`.
-- **Migrations:** `migrations/*.sh` (executed automatically by `omarchy update`).
-
----
-
-## 6. Official Omarchy Documentation
-
-This repository is a fork of [Basecamp / OMACOM Omarchy](https://github.com/omacom/omarchy). The complete official user manual is available in [`manual/`](manual/):
-
-- [The Omarchy Manual](manual/01-welcome-to-omarchy.md)
-- [Official Website](https://omarchy.org)
+Omarchy is released under the [MIT License](https://opensource.org/licenses/MIT).

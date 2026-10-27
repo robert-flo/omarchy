@@ -26,11 +26,5 @@ require("default.hypr.dictation-backend")
 -- Current theme overrides.
 require_optional.module("omarchy.current.theme.hyprland")
 
--- Scrolling layout defaults
-require("default.hypr.scrolling")
-
--- Browser workspaces defaults
-require("default.hypr.browser-workspaces")
-
--- Dev workspaces defaults
-require("default.hypr.dev-workspaces")
+-- Personal layer (ravn-omarchy-overlay); skipped when not installed.
+require_optional.module("default.hypr.ravn")

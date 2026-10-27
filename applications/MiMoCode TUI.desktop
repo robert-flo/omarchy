@@ -1,7 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Type=Application
-Name=MiMoCode TUI
-Exec=xdg-terminal-exec --app-id=TUI.tile -e mimo
-Terminal=false
-Icon=mimo
