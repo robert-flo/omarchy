@@ -1,8 +1,6 @@
 # Omarchy environment (OMARCHY_PATH + PATH), needed even for non-interactive shells
 [[ -r /usr/share/omarchy/default/bash/env-bootstrap ]] && source /usr/share/omarchy/default/bash/env-bootstrap
-
-# Cursor API key (kept out of git; create it with chmod 600)
-[[ -r ~/.config/cursor/api-key ]] && export CURSOR_API_KEY="$(<~/.config/cursor/api-key)"
+[[ -r /usr/share/ravn/omarchy/bash/env ]] && source /usr/share/ravn/omarchy/bash/env
 
 # If not running interactively, don't do anything else (leave this above the rc source)
 [[ $- != *i* ]] && return
@@ -10,17 +8,9 @@
 # All the default Omarchy aliases and functions
 # (don't mess with these directly, just overwrite them here!)
 source "$OMARCHY_PATH/default/bash/rc"
+[[ -r /usr/share/ravn/omarchy/bash/rc ]] && source /usr/share/ravn/omarchy/bash/rc
 
 # Add your own exports, aliases, and functions here.
 #
 # Make an alias for invoking commands you use constantly
 # alias p='python'
-alias agy="$HOME/.local/bin/agy"
-
-
-
-# --- ANDROID & JAVA ENVIRONMENT ---
-export ANDROID_HOME="$HOME/Android/Sdk"
-export ANDROID_USER_HOME="$HOME/.android"
-export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin"
-# --- FIN ANDROID & JAVA ENVIRONMENT ---
