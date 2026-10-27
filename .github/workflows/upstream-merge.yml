@@ -1,0 +1,85 @@
+name: Upstream merge
+
+# ADR-013 fase 1 (fork-docs; reemplaza el rebase de ADR-008). Una vez al dia
+# mergea omacom/omarchy `quattro` en `personal`:
+# - NUNCA rebase ni force-push: rama sync/quattro-<fecha> con merge --no-ff,
+#   PR a personal y merge con merge-commit (conserva la historia de upstream).
+# - checks: sintaxis bash de bin/, migrations/, install/ y tests del fork.
+# - conflicto, checks rojos o cambios de upstream en .github/workflows (GITHUB_TOKEN
+#   no puede empujarlos) -> solo abre/comenta un issue; personal no se toca.
+# Sin secrets: solo GITHUB_TOKEN. omarchy-personal-repo/auto-pin.yml repinea y publica.
+on:
+  schedule:
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: upstream-merge
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: personal
+          fetch-depth: 0
+      - name: Merge quattro
+        id: m
+        run: |
+          git config user.name "Roberto Flores"
+          git config user.email "25asab015@ujmd.edu.sv"
+          git fetch --no-tags https://github.com/omacom/omarchy.git quattro:refs/remotes/upstream/quattro
+          behind="$(git rev-list --count HEAD..upstream/quattro)"
+          echo "personal esta $behind commits detras de omacom/quattro"
+          if [[ "$behind" == 0 ]]; then echo "action=none" >> "$GITHUB_OUTPUT"; exit 0; fi
+          up="$(git rev-parse --short upstream/quattro)"
+          br="sync/quattro-$(date -u +%Y%m%d)-$up"
+          echo "branch=$br" >> "$GITHUB_OUTPUT"; echo "up=$up" >> "$GITHUB_OUTPUT"
+          git checkout -b "$br"
+          if ! git merge --no-ff --no-edit -m "Merge omacom/quattro ($up) en personal" -m "agente: ceo · plataforma: Grok Bot" upstream/quattro; then
+            { echo "reason<<EOF"; echo "Conflictos de merge:"; git diff --name-only --diff-filter=U | sed 's/^/- /'; echo EOF; } >> "$GITHUB_OUTPUT"
+            git merge --abort; echo "action=issue" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          wf="$(git diff --name-only personal HEAD -- .github/workflows)"
+          if [[ -n "$wf" ]]; then
+            { echo "reason<<EOF"; echo "Upstream cambia workflows (GITHUB_TOKEN no puede empujarlos):"; echo "$wf" | sed 's/^/- /'; echo EOF; } >> "$GITHUB_OUTPUT"
+            echo "action=issue" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "action=pr" >> "$GITHUB_OUTPUT"
+      - name: Checks
+        id: t
+        if: steps.m.outputs.action == 'pr'
+        run: |
+          rc=0
+          for f in bin/* migrations/*.sh install/*.sh install/*/*.sh test/shell.d/*.sh; do
+            [[ -f $f ]] || continue
+            head -1 "$f" | grep -q bash || [[ $f == *.sh ]] || continue
+            bash -n "$f" || { echo "::error file=$f::sintaxis"; rc=1; }
+          done
+          exit $rc
+      - name: PR y merge
+        if: steps.m.outputs.action == 'pr'
+        run: |
+          br="${{ steps.m.outputs.branch }}"
+          git push origin "$br"
+          url="$(gh pr create --base personal --head "$br" --title "sync: merge omacom/quattro ${{ steps.m.outputs.up }}" \
+            --body "Merge diario automatico (ADR-013). Sin rebase ni force-push. auto-pin de omarchy-personal-repo lo publica.")"
+          gh pr merge "$url" --merge --delete-branch --match-head-commit "$(git rev-parse HEAD)"
+      - name: Issue
+        if: failure() || steps.m.outputs.action == 'issue'
+        run: |
+          t="upstream-merge: requiere intervencion"
+          run="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          body="$(printf '%s\n\nRun: %s\n\n`personal` no se modifico. Resolver a mano: rama desde personal, `git merge omacom/quattro`, PR con merge-commit (nunca rebase/force).' "${{ steps.m.outputs.reason || 'Fallo de checks o del job.' }}" "$run")"
+          n="$(gh issue list --state open --search "\"$t\" in:title" --json number --jq '.[0].number')"
+          if [[ -n "$n" ]]; then gh issue comment "$n" --body "$body"; else gh issue create --title "$t" --body "$body"; fi
