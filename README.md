@@ -48,7 +48,7 @@ graph TD
 | [**`robert-flo/omarchy`**](https://github.com/robert-flo/omarchy) | `personal` | **Fork Source Code:** Contains all custom configurations (`config/`), webapps (`applications/`), scripts (`bin/`), and package lists. Rebased continuously on top of `quattro`. |
 | [**`robert-flo/omarchy`**](https://github.com/robert-flo/omarchy) | `quattro` | **Upstream Mirror:** 100% clean mirror of official `omacom/omarchy:quattro`. Serves as the immutable baseline for rebases and official upstream Pull Requests. |
 | [**`robert-flo/omarchy-pkgs`**](https://github.com/robert-flo/omarchy-pkgs) | `personal` / `master` | **Packaging Engine & CI:** Houses the PKGBUILD recipes for the personal pair (`omarchy` & `omarchy-settings`), Docker build environment, and GitHub Actions automation ([`release-personal.yml`](https://github.com/robert-flo/omarchy-pkgs/blob/personal/.github/workflows/release-personal.yml)). |
-| [**`robert-flo/omarchy-personal-repo`**](https://github.com/robert-flo/omarchy-personal-repo) | `gh-pages` | **Pacman Binary Repository:** Hosted on GitHub Pages. Serves the pacman package databases (`omarchy-personal.db`, `.sig`, `.files`) and binary packages signed by GPG key `CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4`. |
+| [**`robert-flo/omarchy-personal-repo`**](https://github.com/robert-flo/omarchy-personal-repo) | `gh-pages` | **Pacman Binary Repository:** Hosted on GitHub Pages. Serves the pacman package databases (`omarchy-personal.db`, `.sig`, `.files`) and binary packages signed by GPG key `14EDEAC8B295BB30CA6249A9E954119B629B58F6` (rotated per ADR 0002 of omarchy-personal-repo; old `76AFFCC217DB9FC4` retired). |
 | [**`robert-flo/fork-docs`**](https://github.com/robert-flo/fork-docs) | `main` | **Canonical Documentation Portal:** The golden standard ("Estándar de Oro") and single source of truth. Live site at [https://robert-flo.github.io/fork-docs/](https://robert-flo.github.io/fork-docs/) containing the User Guide, Architecture & Decision Matrix, Operations, all 9 ADRs, and historical reference. |
 
 ---
@@ -101,7 +101,7 @@ Every computer in your setup operates in one of two clearly defined roles:
 3. **Publish to the fleet:**
    When your changes are tested and ready:
    - Commit and push to `personal` using the strict branch workflow.
-   - GitHub Actions ([`release-personal.yml`](https://github.com/robert-flo/omarchy-pkgs/blob/personal/.github/workflows/release-personal.yml)) automatically compiles the packages inside an Arch container, signs them with GPG key `CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4`, and publishes them to [`omarchy-personal-repo`](https://github.com/robert-flo/omarchy-personal-repo).
+   - GitHub Actions ([`release-personal.yml`](https://github.com/robert-flo/omarchy-pkgs/blob/personal/.github/workflows/release-personal.yml)) automatically compiles the packages inside an Arch container, signs them with GPG key `14EDEAC8B295BB30CA6249A9E954119B629B58F6`, and publishes them to [`omarchy-personal-repo`](https://github.com/robert-flo/omarchy-personal-repo).
 
 ---
 
@@ -112,8 +112,9 @@ A daughter machine is installed from the **standard official Omarchy ISO**. You 
 
 1. **Trust your personal GPG key (One-time setup):**
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/robert-flo/fork-docs/main/keys/omarchy-personal-repo.pub.asc | sudo pacman-key --add -
-   sudo pacman-key --lsign-key CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4
+   curl -fsSL https://raw.githubusercontent.com/robert-flo/omarchy-personal-repo/main/keys/omarchy-personal-repo.pub.asc | sudo pacman-key --add -
+   sudo pacman-key --lsign-key 14EDEAC8B295BB30CA6249A9E954119B629B58F6
+   sudo pacman-key --delete CD92AB07B1D24DC9A74EB60E76AFFCC217DB9FC4 2>/dev/null || true   # retired key
    ```
 2. **Install the initial personal package pair:**
    ```bash
