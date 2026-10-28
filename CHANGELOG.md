@@ -4,6 +4,16 @@ This document tracks all custom changes, features, and fixes applied specificall
 
 Because upstream (`omacom/omarchy`) receives frequent commits and releases, this log serves as the authoritative record of personal customizations maintained on top of upstream, making it easy to audit differences without inspecting upstream git history.
 
+## [2026-10-28]
+
+### One-time migration: overlay source lines in existing `~/.bashrc`
+
+- **Context:** fork-docs ADR-013 + `guide/01-introduccion.md` (bridge for existing homes). Replaces robert-flo/PJ-NIRI-rf-omarchy-workstation#83.
+
+#### What was changed:
+1. **`migrations/1793228944.sh`**: inserts the 2 `[[ -r /usr/share/ravn/omarchy/bash/{env,rc} ]] && source ...` lines after their stub anchors, only if missing (exact match, tolerant of indentation/CRLF). No-op when present (no rewrite, even without trailing newline); skips missing or symlinked `~/.bashrc` (warns on symlink); backup in `~/.cache/ravn-piloto/`; atomic replace keeping mode/owner.
+2. **`test/shell.d/bashrc-overlay-migration-test.sh`**: covers the cases above and checks `default/bashrc` keeps both extension points.
+
 ## [2026-10-13]
 
 ### Pacman personal repo via hook (no `pacman-stable.conf` edits)
